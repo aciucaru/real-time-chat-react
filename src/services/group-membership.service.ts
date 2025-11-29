@@ -30,7 +30,7 @@ export async function addUserToGroup(groupId: string,
 
 // GET /api/groups/{groupId}/members
 // Get the list of users in a group
-export async function getUserFromGroup(groupId: string, token: string): Promise<User[]>
+export async function getGroupUsers(groupId: string, token: string): Promise<User[]>
 {
     try
     {
@@ -44,5 +44,20 @@ export async function getUserFromGroup(groupId: string, token: string): Promise<
     }
     catch (error: any)
     { throw new Error(error.response?.data?.message || error.message || "Failed to fetch group members"); }
+}
+
+// DELETE /api/groups/{groupId}/members/{userId}
+// Remove a user from a group
+export async function removeUserFromGroup(groupId: string, userId: string, token: string): Promise<void>
+{
+    try
+    {
+        axios.delete(`${BASE_URL}/${groupId}/members/${userId}`,
+                    { headers: {
+                                    "Content-Type": "application/json",
+                                    Authorization: `Bearer ${token}`,
+                                },
+                    });
+    }
 }
                                     
