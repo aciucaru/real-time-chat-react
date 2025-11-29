@@ -1,4 +1,3 @@
-import type { AuthResponseDTO } from "../dto/AuthResponseDTO";
 import type { LoginRequestDTO } from "../dto/LoginRequestDTO";
 import type { SignUpRequestDTO } from "../dto/SignUpRequestDTO";
 import { toAuthResponse } from "../mapper/auth.mapper";
