@@ -9,7 +9,8 @@ import type { AuthResponse } from "../models/AuthResponse";
 
 const BASE_URL = "api/auth";
 
-export async function signUp(payload: SignUpRequestDTO): Promise<AuthResponseDTO>
+// POST api/auth/signup
+export async function signUp(payload: SignUpRequestDTO): Promise<AuthResponse>
 {
     try
     {
@@ -22,6 +23,7 @@ export async function signUp(payload: SignUpRequestDTO): Promise<AuthResponseDTO
     { throw new Error(error.response?.data?.message || "Signup failed"); }
 }
 
+// POST /api/auth/login
 export async function login(payload: LoginRequestDTO): Promise<AuthResponse>
 {
     try
