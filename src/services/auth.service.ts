@@ -9,6 +9,7 @@ import type { AuthResponse } from "../models/AuthResponse";
 const BASE_URL = "api/auth";
 
 // POST api/auth/signup
+// Create a new user
 export async function signUp(payload: SignUpRequestDTO): Promise<AuthResponse>
 {
     try
@@ -23,6 +24,7 @@ export async function signUp(payload: SignUpRequestDTO): Promise<AuthResponse>
 }
 
 // POST /api/auth/login
+// Authenticate and return a JWT/session token.
 export async function login(payload: LoginRequestDTO): Promise<AuthResponse>
 {
     try

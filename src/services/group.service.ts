@@ -9,6 +9,7 @@ import axios from "axios";
 const BASE_URL = "api/groups";
 
 // POST /api/groups
+// Create a new group
 export async function createGroup(payload: CreateGroupRequestDTO): Promise<Group>
 {
     try
@@ -23,6 +24,7 @@ export async function createGroup(payload: CreateGroupRequestDTO): Promise<Group
 }
 
 // GET /api/groups
+// Get all groups of the current logged-in user
 export async function getGroupsByUser(token: string): Promise<Group[]>
 {
     try
@@ -42,6 +44,7 @@ export async function getGroupsByUser(token: string): Promise<Group[]>
 
 // not really necessary, can be removed
 // GET /api/groups/{groupId}
+// Get group details
 export async function getGroupDetails(groupId: string, token: string): Promise<Group>
 {
     try
@@ -60,6 +63,7 @@ export async function getGroupDetails(groupId: string, token: string): Promise<G
 }
 
 // DELETE /api/groups/{groupId}
+// Delete a group (if the user is the creator/admin)
 export async function deleteGroup(groupId: string, token: string): Promise<void>
 {
     try
