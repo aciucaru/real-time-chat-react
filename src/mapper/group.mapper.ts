@@ -5,6 +5,8 @@ export function toGroup(dto: GroupResponseDTO): Group
 {
     return {
         id: dto.id,
-        name: dto.name
+        name: dto.name,
+        description: dto.description,
+        ownerId: dto.ownerId
     };
 }
