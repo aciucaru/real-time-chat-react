@@ -38,11 +38,37 @@ export async function getGroupsByUser(token: string): Promise<Group[]>
     { throw new Error(error.response?.data?.message || error.message || "Failed to fetch user's groups"); }
 }
 
+// not really necessary, can be removed
 // GET /api/groups/{groupId}
 export async function getGroupDetails(groupId: string, token: string): Promise<Group>
 {
     try
     {
-        
+        const { data } = await axios.get<GroupResponseDTO>(`${BASE_URL}/${groupId}`,
+                                                            { headers: {
+                                                                    "Content-Type": "application/json",
+                                                                    // pass JWT token
+                                                                    Authorization: `Bearer ${token}`,
+                                                                    },
+                                                            });
+        return toGroup(data);
     }
+    catch (error: any)
+    { throw new Error(error.response?.data?.message || error.message || "Failed to fetch group"); }
+}
+
+// DELETE /api/groups/{groupId}
+export async function deleteGroup(groupId: string, token: string): Promise<void>
+{
+    try
+    {
+        await axios.delete(`${BASE_URL}/${groupId}`,
+                            { headers: {
+                                        "Content-Type": "application/json",
+                                        Authorization: `Bearer ${token}`,
+                                    },
+                            });
+    }
+    catch (error: any)
+    { throw new Error(error.response?.data?.message || error.message || "Failed to delete group"); }
 }
