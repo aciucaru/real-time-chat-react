@@ -1,8 +1,10 @@
-import axios from "axios";
 import type { CreateGroupRequestDTO } from "../dto/CreateGroupRequestDTO";
 import type { Group } from "../models/Group";
-import { toGroup } from "../mapper/group.mapper";
 import type { GroupResponseDTO } from "../dto/GroupResponseDTO";
+import { toGroup } from "../mapper/group.mapper";
+
+import axios from "axios";
+
 
 const BASE_URL = "api/groups";
 
@@ -65,6 +67,7 @@ export async function deleteGroup(groupId: string, token: string): Promise<void>
         await axios.delete(`${BASE_URL}/${groupId}`,
                             { headers: {
                                         "Content-Type": "application/json",
+                                        // pass JWT token
                                         Authorization: `Bearer ${token}`,
                                     },
                             });
