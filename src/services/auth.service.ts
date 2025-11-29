@@ -14,10 +14,10 @@ export async function signUp(payload: SignUpRequestDTO): Promise<AuthResponse>
 {
     try
     {
-        const { data } = await axios.post(`${BASE_URL}/signup`,
+        const response = await axios.post(`${BASE_URL}/signup`,
                                             payload,
                                         { headers: {"Content-Type": "application/json",}, });
-        return toAuthResponse(data);
+        return toAuthResponse(response.data);
     }
     catch (error: any)
     { throw new Error(error.response?.data?.message || "Signup failed"); }
@@ -29,10 +29,10 @@ export async function login(payload: LoginRequestDTO): Promise<AuthResponse>
 {
     try
     {
-        const { data } = await axios.post(`${BASE_URL}/login`,
+        const response = await axios.post(`${BASE_URL}/login`,
                                             payload,
                                         { headers: {"Content-Type": "application/json",}, });
-        return toAuthResponse(data);
+        return toAuthResponse(response.data);
     }
     catch (error: any)
     { throw new Error(error.response?.data?.message || "Login failed"); }
