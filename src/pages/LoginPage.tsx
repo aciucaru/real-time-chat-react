@@ -4,101 +4,83 @@ import { useNavigate } from "react-router-dom";
 import type { LoginRequestDTO } from "../dto/LoginRequestDTO";
 import type { AuthResponseDTO } from "../dto/AuthResponseDTO";
 
-import { login } from "../services/auth.service";
+import { login } from "../services/auth/auth.service";
+import { useAuthHook } from "../services/auth/use-auth-hook";
+import { axiosPublicClient } from "../services/auth/axios-clients";
 
 export default function LoginPage()
 {
     const navigate = useNavigate();
+    const { setAccessToken } = useAuthHook();
 
     // State for forms
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
 
     // UI state
-    const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Form submit
     const handleSubmit = async (event: React.FormEvent) =>
     {
         event.preventDefault;
 
+        setIsSubmitting(true);
         setError(null);
-        setLoading(true);
-
-        const payload: LoginRequestDTO = {username, password};
 
         try
         {
-            const authResponse: AuthResponseDTO = await login(payload);
+            const payload: LoginRequestDTO = {username, password};
 
-            // Save token for future requests
-            localStorage.setItem("authToken", authResponse.token);
+            // Send credentials to backend
+            const authResponse = await login(payload);
 
-            // Save user info (optionally)
-            localStorage.setItem("userId", authResponse.userId);
-            localStorage.setItem("username", authResponse.username);
-
+            // Store the received access token in React Context and in tokenStore
+            setAccessToken(authResponse.token);
+            
             // Redirect to chat page
             navigate("/chat");
         }
         catch (error: any)
         {
             // Set error state in order to refresh UI
-            setError(error.message);
+            setError(error?.response?.data?.message || "Login failed");
         }
         finally
         {
             // Set state in order to refesh UI
-            setLoading(false);
+            setIsSubmitting(false);
         }
     };
 
     return (
-        <div>
-        <form onSubmit={handleSubmit}>
-            <h2>Login</h2>
+    <div>
+      <h2>Login</h2>
 
-            {error && (
-            <div>{error}</div>
-            )}
+      <form onSubmit={handleSubmit}>
+        <input
+          type="email"
+          placeholder="Email"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+        />
 
-            <div className="mb-4">
-            <label htmlFor="username">
-                Username
-            </label>
-            <input
-                id="username"
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-            />
-            </div>
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
 
-            <div className="mb-6">
-            <label htmlFor="password">
-                Password
-            </label>
-            <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-            />
-            </div>
+        {error && <div>{error}</div>}
 
-            <button
-            type="submit"
-            className={`w-full p-2 rounded text-white font-bold ${
-                loading ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"
-            }`}
-            disabled={loading}
-            >
-            {loading ? "Logging in..." : "Login"}
-            </button>
-        </form>
-        </div>
-    );
+        <button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Logging in..." : "Login"}
+        </button>
+      </form>
+    </div>
+  );
 }
