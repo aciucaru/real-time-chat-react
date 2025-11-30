@@ -4,7 +4,7 @@ import { toAuthResponse } from "../../mapper/auth.mapper";
 
 import axios from "axios";
 import type { AuthResponse } from "../../models/AuthResponse";
-import { axiosPublicClient } from "./axios-clients";
+import { axiosPublicClient } from "../auth/axios-clients";
 
 
 const BASE_URL = "api/auth";

@@ -1,7 +1,7 @@
 import { createContext } from "react";
 import axios from "axios";
 
-
+// The data type of the React context
 export interface AuthContextType
 {
     accessToken: string | null;
