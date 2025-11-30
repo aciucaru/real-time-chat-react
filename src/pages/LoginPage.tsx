@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import type { LoginRequestDTO } from "../dto/LoginRequestDTO";
 import type { AuthResponseDTO } from "../dto/AuthResponseDTO";
+
 import { login } from "../services/auth.service";
 
 export default function LoginPage()
@@ -16,6 +18,7 @@ export default function LoginPage()
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
+    // Form submit
     const handleSubmit = async (event: React.FormEvent) =>
     {
         event.preventDefault;
