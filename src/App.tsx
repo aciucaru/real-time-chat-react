@@ -6,6 +6,7 @@ import { AuthProvider } from './services/auth/AuthProvider';
 import { NavBar } from './ui/components/NavBar';
 import LoginPage from './ui/pages/LoginPage';
 import RegisterPage from './ui/pages/RegisterPage';
+import ChatPage from './ui/pages/ChatPage';
 
 function App()
 {
@@ -18,6 +19,7 @@ function App()
                 <Routes>
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />
+                    <Route path="/chat" element={<ChatPage />} />
                 </Routes>
             </BrowserRouter>
         </AuthProvider>  
