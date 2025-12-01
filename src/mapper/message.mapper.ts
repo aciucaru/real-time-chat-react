@@ -1,5 +1,5 @@
-import type { MessageResponseDTO } from "../dto/MessageResponseDTO";
-import type { Message } from "../models/Message";
+import type { MessageResponseDTO } from "../models/dto/MessageResponseDTO";
+import type { Message } from "../models/entity/Message";
 
 export function toMessage(dto: MessageResponseDTO): Message
 {

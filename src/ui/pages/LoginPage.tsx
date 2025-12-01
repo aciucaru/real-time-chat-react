@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import type { LoginRequestDTO } from "../../dto/LoginRequestDTO";
-import type { AuthResponseDTO } from "../../dto/AuthResponseDTO";
+import type { LoginRequestDTO } from "../../models/dto/LoginRequestDTO";
+import type { AuthResponseDTO } from "../../models/dto/AuthResponseDTO";
 
 import { login } from "../../services/api/auth.service";
 import { useAuthHook } from "../../services/auth/use-auth-hook";

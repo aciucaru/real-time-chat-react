@@ -1,7 +1,7 @@
 import axios from "axios";
 
-import type { MessageResponseDTO } from "../../dto/MessageResponseDTO";
-import type { SendMessageRequestDTO } from "../../dto/SendMessageRequestDTO";
+import type { MessageResponseDTO } from "../../models/dto/MessageResponseDTO";
+import type { SendMessageRequestDTO } from "../../models/dto/SendMessageRequestDTO";
 
 const BASE_URL = "/api/messages";
 

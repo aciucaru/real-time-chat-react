@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import type { SignUpRequestDTO } from "../../dto/SignUpRequestDTO";
+import type { SignUpRequestDTO } from "../../models/dto/SignUpRequestDTO";
 import { signUp } from "../../services/api/auth.service";
 
 export default function RegisterPage()

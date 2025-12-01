@@ -1,5 +1,5 @@
-import type { AuthResponseDTO } from "../dto/AuthResponseDTO";
-import type { AuthResponse } from "../models/AuthResponse";
+import type { AuthResponseDTO } from "../models/dto/AuthResponseDTO";
+import type { AuthResponse } from "../models/entity/AuthResponse";
 
 export function toAuthResponse(dto: AuthResponseDTO): AuthResponse
 {
