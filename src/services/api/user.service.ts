@@ -7,7 +7,7 @@ const BASE_URL = "/api/users";
 // GEt all users so that the current loged-in user can view the list of users an choose
 // a user to chat with.
 // Only a loged-in user is able to get the list of all users.
-export async function gatAllUsers(): Promise<UserResponseDTO[]>
+export async function getAllUsers(): Promise<UserResponseDTO[]>
 {
     const response = await axiosAuthClient.get<UserResponseDTO[]>(BASE_URL);
 

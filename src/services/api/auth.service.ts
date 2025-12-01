@@ -10,7 +10,7 @@ import type { AuthResponseDTO } from "../../models/dto/AuthResponseDTO";
 
 const BASE_URL = "/auth";
 
-// POST api/auth/signup
+// POST /auth/signup
 // Create a new user
 export async function signUp(payload: SignUpRequestDTO): Promise<AuthResponse>
 {
