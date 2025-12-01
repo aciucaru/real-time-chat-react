@@ -1,10 +1,11 @@
-import type { LoginRequestDTO } from "../../dto/LoginRequestDTO";
-import type { SignUpRequestDTO } from "../../dto/SignUpRequestDTO";
+import type { LoginRequestDTO } from "../../models/dto/LoginRequestDTO";
+import type { SignUpRequestDTO } from "../../models/dto/SignUpRequestDTO";
 import { toAuthResponse } from "../../mapper/auth.mapper";
 
 import axios from "axios";
-import type { AuthResponse } from "../../models/AuthResponse";
+import type { AuthResponse } from "../../models/entity/AuthResponse";
 import { axiosPublicClient } from "../auth/axios-clients";
+import type { AuthResponseDTO } from "../../models/dto/AuthResponseDTO";
 
 
 const BASE_URL = "/auth";
@@ -13,33 +14,27 @@ const BASE_URL = "/auth";
 // Create a new user
 export async function signUp(payload: SignUpRequestDTO): Promise<AuthResponse>
 {
-    try
-    {
-        const response = await axiosPublicClient.post(`${BASE_URL}/register`,
-                                            payload,
-                                        { headers: {"Content-Type": "application/json",}, });
-        return toAuthResponse(response.data);
-    }
-    catch (error: any)
-    { throw new Error(error.response?.data?.message || "Signup failed"); }
+    const response = await axiosPublicClient.post<AuthResponseDTO>(`${BASE_URL}/register`,
+                                                    payload,
+                                                    { headers: {"Content-Type": "application/json",}, }
+                                                );
+
+    // Convert from AuthResponseDTO to AuthResponse
+    return toAuthResponse(response.data);
 }
 
 // POST /api/auth/login
 // Authenticate and return a JWT/session token.
 export async function login(payload: LoginRequestDTO): Promise<AuthResponse>
 {
-    try
-    {
-        const response = await axiosPublicClient.post<AuthResponse>(`${BASE_URL}/login`,
-                                    payload,
-                                    { headers:
-                                        {"Content-Type": "application/json",},
-                                        // ensures refresh token cookie is sent
-                                        withCredentials: true, 
-                                    });
-                                    
-        return toAuthResponse(response.data);
-    }
-    catch (error: any)
-    { throw new Error(error.response?.data?.message || "Login failed"); }
+    const response = await axiosPublicClient.post<AuthResponseDTO>(`${BASE_URL}/login`,
+                                payload,
+                                { headers:
+                                    {"Content-Type": "application/json",},
+                                    // ensures refresh token cookie is sent
+                                    withCredentials: true, 
+                                });
+                                
+    // Convert from AuthResponseDTO to AuthResponse
+    return toAuthResponse(response.data);
 }
