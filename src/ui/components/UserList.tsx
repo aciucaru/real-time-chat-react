@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import type { UserResponseDTO } from "../../models/dto/UserResponseDTO";
 
-
 import { useAuthHook } from "../../services/auth/use-auth-hook";
 import { getAllUsers } from "../../services/api/user.service";
 
+// This component displays the list of all available users, so that the current user
+// can choose a user to chat it.
 export default function UserList()
 {
     const { isAuthenticated } = useAuthHook();
