@@ -3,8 +3,9 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import './App.css'
 import { AuthProvider } from './services/auth/AuthProvider';
-import { NavBar } from './components/NavBar';
-import LoginPage from './pages/LoginPage';
+import { NavBar } from './ui/components/NavBar';
+import LoginPage from './ui/pages/LoginPage';
+import RegisterPage from './ui/pages/RegisterPage';
 
 function App()
 {
@@ -17,13 +18,6 @@ function App()
                 <Routes>
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />
-                    <Route path="/dashboard" element={<DashboardPage />} />
-                    <Route path="/items" element={<InventoryItemListPage />} />
-                    <Route path="/add-item" element={<AddInventoryItemPage />} />
-                    <Route path="/edit-item" element={<EditInventoryItemPage />} />
-                    <Route path="/user-crud" element={<UserCrudPage />} />
-                    <Route path="/inventory-item-crud" element={<InventoryItemCrudPage />} />
-                    <Route path="/inventory-log-crud" element={<InventoryLogCrudPage />} />
                 </Routes>
             </BrowserRouter>
         </AuthProvider>  
