@@ -60,7 +60,7 @@ export default function UserList()
 
         <ul>
             {users.map((user) => (
-                <li key={user.userId}>
+                <li key={user.id}>
                 <div>{user.username}</div>
                 </li>
             ))}
