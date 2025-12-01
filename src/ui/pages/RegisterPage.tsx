@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import type { SignUpRequestDTO } from "../dto/SignUpRequestDTO";
-import { signUp } from "../services/api/auth.service";
+import type { SignUpRequestDTO } from "../../dto/SignUpRequestDTO";
+import { signUp } from "../../services/api/auth.service";
 
 export default function RegisterPage()
 {
@@ -9,7 +9,6 @@ export default function RegisterPage()
 
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
-    const [displayName, setDisplayName] = useState<string>("");
 
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
@@ -25,8 +24,7 @@ export default function RegisterPage()
 
         const payload: SignUpRequestDTO = {
             username: username,
-            password: password,
-            displayName: displayName
+            password: password
         };
 
         try
@@ -54,15 +52,7 @@ export default function RegisterPage()
             onChange={(e) => setUsername(e.target.value)}
             required
             />
-
-            <input
-            type="text"
-            placeholder="Display name"
-            value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
-            required
-            />
-
+            
             <input
             type="password"
             placeholder="Password"

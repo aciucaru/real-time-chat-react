@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import type { LoginRequestDTO } from "../dto/LoginRequestDTO";
-import type { AuthResponseDTO } from "../dto/AuthResponseDTO";
+import type { LoginRequestDTO } from "../../dto/LoginRequestDTO";
+import type { AuthResponseDTO } from "../../dto/AuthResponseDTO";
 
-import { login } from "../services/api/auth.service";
-import { useAuthHook } from "../services/auth/use-auth-hook";
-import { axiosPublicClient } from "../services/auth/axios-clients";
+import { login } from "../../services/api/auth.service";
+import { useAuthHook } from "../../services/auth/use-auth-hook";
+import { axiosPublicClient } from "../../services/auth/axios-clients";
 
 export default function LoginPage()
 {

@@ -3,9 +3,9 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import './App.css'
 import { AuthProvider } from './services/auth/AuthProvider';
-import { NavBar } from './components/NavBar';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
+import { NavBar } from './ui/components/NavBar';
+import LoginPage from './ui/pages/LoginPage';
+import RegisterPage from './ui/pages/RegisterPage';
 
 function App()
 {
