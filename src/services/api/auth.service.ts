@@ -1,6 +1,6 @@
 import type { LoginRequestDTO } from "../../models/dto/LoginRequestDTO";
 import type { SignUpRequestDTO } from "../../models/dto/SignUpRequestDTO";
-import { toAuthResponse } from "../../mapper/auth.mapper";
+import { toAuthResponse } from "../../models/mapper/auth.mapper";
 
 import axios from "axios";
 import type { AuthResponse } from "../../models/entity/AuthResponse";
