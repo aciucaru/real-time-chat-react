@@ -7,7 +7,7 @@ import type { AuthResponse } from "../../models/AuthResponse";
 import { axiosPublicClient } from "../auth/axios-clients";
 
 
-const BASE_URL = "api/auth";
+const BASE_URL = "/auth";
 
 // POST api/auth/signup
 // Create a new user
@@ -15,7 +15,7 @@ export async function signUp(payload: SignUpRequestDTO): Promise<AuthResponse>
 {
     try
     {
-        const response = await axiosPublicClient.post(`${BASE_URL}/signup`,
+        const response = await axiosPublicClient.post(`${BASE_URL}/register`,
                                             payload,
                                         { headers: {"Content-Type": "application/json",}, });
         return toAuthResponse(response.data);

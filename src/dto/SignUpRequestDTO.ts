@@ -1,6 +1,6 @@
 export interface SignUpRequestDTO
 {
-  username: string;
-  password: string;
-  displayName: string;
+    username: string;
+    password: string;
+    displayName: string;
 }
