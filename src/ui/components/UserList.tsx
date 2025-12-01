@@ -1,11 +1,18 @@
 import { useEffect, useState } from "react";
 import type { UserResponseDTO } from "../../models/dto/UserResponseDTO";
 
-
 import { useAuthHook } from "../../services/auth/use-auth-hook";
 import { getAllUsers } from "../../services/api/user.service";
 
-export default function UserList()
+interface UserListProps
+{
+    // Callback when a user is selected from the list
+    onUserSelected: (user: UserResponseDTO) => void;
+}
+
+// This component displays the list of all available users, so that the current user
+// can choose a user to chat it.
+export default function UserList(props: UserListProps)
 {
     const { isAuthenticated } = useAuthHook();
 
@@ -14,39 +21,41 @@ export default function UserList()
     const [error, setError] = useState<string | null>(null);
 
     useEffect( () =>
-    {
-        if (!isAuthenticated)
         {
-            setError("You must be logged in to view users");
-            setIsLoading(true);
-
-            return;
-        }
-
-        // React's useEffect() cannot be async, so we create an async fucntion inside it
-        // and then call it.
-        const loadUsers = async () =>
-        {
-            try
+            if (!isAuthenticated)
             {
-                const list = await getAllUsers(); // get users from backend
-                setUsers(list); // store users in state
-            }
-            catch (error: any)
-            {
-                // If backend returns error, show message
-                setError(error?.response?.data?.message || "Failed to load users.");
-            }
-            finally
-            {
-                // Always stop loading spinner
-                setIsLoading(false);
-            }
-        };
+                setError("You must be logged in to view users");
+                setIsLoading(true);
 
-        // Call the async function
-        loadUsers();
-    }, [isAuthenticated]);
+                return;
+            }
+
+            // React's useEffect() cannot be async, so we create an async fucntion inside it
+            // and then call it.
+            const loadUsers = async () =>
+            {
+                try
+                {
+                    const userList = await getAllUsers(); // get users from backend
+                    setUsers(userList); // store users in state
+                }
+                catch (error: any)
+                {
+                    // If backend returns error, show message
+                    setError(error?.response?.data?.message || "Failed to load users.");
+                }
+                finally
+                {
+                    // Always stop loading spinner
+                    setIsLoading(false);
+                }
+            };
+
+            // Call the async function
+            loadUsers();
+        },
+        [isAuthenticated] // run this effect every time 'isAuthenticated' changes
+    );
 
     if (isLoading)
         return <div>Loading users...</div>;
@@ -54,13 +63,19 @@ export default function UserList()
     if (error)
         return <div>{error}</div>;
 
+    if (users.length === 0)
+        return <div>No users found</div>;
+
     return (
     <div>
         <h3>Users</h3>
 
         <ul>
             {users.map((user) => (
-                <li key={user.id}>
+                <li
+                key={user.id}
+                onClick={() => props.onUserSelected(user)}
+                >
                 <div>{user.username}</div>
                 </li>
             ))}
