@@ -1,7 +1,7 @@
-import type { MessageResponseDTO } from "../dto/MessageResponseDTO";
+import type { MessageDTO } from "../dto/MessageDTO";
 import type { Message } from "../entity/Message";
 
-export function toMessage(dto: MessageResponseDTO): Message
+export function toMessage(dto: MessageDTO): Message
 {
     return {
         id: dto.id,
