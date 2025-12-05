@@ -1,4 +1,7 @@
-export interface MessageResponseDTO
+/* The main messsage datatype.
+** This DTO is used both for sending a message to the back-end and receiveing a message from
+** the back-end */
+export interface MessageDTO
 {
     id: string; // UUID type on the back-end which will serialize to string in JSON format
     senderId: string; // UUID type on the back-end which will serialize to string in JSON format
