@@ -8,6 +8,7 @@ import { getMessagesFromUser, sendMessage } from "../../services/api/message.ser
 
 import MessageList from "../components/MessageList";
 import UserList from "../components/UserList";
+import MessageEditor from "../components/MessageEditor";
 
 // The main 
 export default function ChatPage()
