@@ -4,8 +4,16 @@ import { useAuthHook } from "../../services/auth/use-auth-hook";
 
 interface MessageListProps
 {
+    // The list of messages fetched from outside this componenet
     messages: MessageResponseDTO[]; // the array of messages
+
+    // If the messages are still loading
     loading: boolean;
+
+    // The MessageList React component does not fetch its own messages, so it will not know
+    // if there was an error fetching the messages.
+    // This is why we pass it an error prop, simbolizing that there was an error fetching the messages,
+    // if this error object is not null.
     error: string | null;
 }
 
