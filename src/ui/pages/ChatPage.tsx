@@ -15,6 +15,7 @@ export default function ChatPage()
     const [selectedUser, setSelectedUser] = useState<UserResponseDTO | null>(null);
     const [messages, setMessages] = useState<MessageResponseDTO[]>([]);
     const [isLoadingMessages, setIsLoadingMessages] = useState<boolean>(false);
+    const [messagesError, setMessagesError] = useState<string | null>(null);
 
     // Load corresponding messages whenever the selcted user changes
     useEffect( () =>
@@ -33,6 +34,8 @@ export default function ChatPage()
                     const messageList = await getMessagesFromUser(selectedUser.id);
                     setMessages(messageList);
                 }
+                catch (error: any)
+                { setMessagesError(error.message || "Error fetching messages") }
                 finally
                 { setIsLoadingMessages(false); }
             };
@@ -70,7 +73,7 @@ export default function ChatPage()
         <MessageList
             messages={messages}
             loading={isLoadingMessages}
-            selectedUser={selectedUser}
+            error={messagesError}
         />
 
         {selectedUser && (
