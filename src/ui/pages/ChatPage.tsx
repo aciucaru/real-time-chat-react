@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 
 import type { MessageDTO } from "../../models/dto/MessageDTO";
 import type { UserResponseDTO } from "../../models/dto/UserResponseDTO";
-import type { SendMessageRequestDTO } from "../../models/dto/SendMessageRequestDTO";
 
 import { getMessagesFromUser, sendMessage } from "../../services/api/message.service";
 
@@ -53,10 +52,13 @@ export default function ChatPage()
         if (!selectedUser)
             return;
 
-        const dto: SendMessageRequestDTO =
+        const dto: MessageDTO =
         {
             receiverId: selectedUser.id,
-            content: content
+            content: content,
+            id: "",
+            senderId: "",
+            timestamp: ""
         };
 
         // Send the message

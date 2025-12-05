@@ -1,7 +1,6 @@
 import axios from "axios";
 
 import type { MessageDTO } from "../../models/dto/MessageDTO";
-import type { SendMessageRequestDTO } from "../../models/dto/SendMessageRequestDTO";
 import { axiosAuthClient } from "../auth/axios-clients";
 
 const BASE_URL = "/api/messages";
@@ -9,7 +8,7 @@ const BASE_URL = "/api/messages";
 // POST /api/messages/{receiverId}
 // Sends a message from the current loged-in user to another user (receiver).
 // The current user is identified by JWT token and the receiver is identified by ID.
-export async function sendMessage(payload: SendMessageRequestDTO): Promise<MessageDTO>
+export async function sendMessage(payload: MessageDTO): Promise<MessageDTO>
 {
     try
     {
