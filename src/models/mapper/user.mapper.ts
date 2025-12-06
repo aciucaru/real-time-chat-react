@@ -1,7 +1,7 @@
-import type { UserResponseDTO } from "../dto/UserResponseDTO";
+import type { UserResponseDto } from "../dto/UserResponseDto";
 import type { User } from "../entity/User";
 
-export function toUser(dto: UserResponseDTO): User
+export function toUser(dto: UserResponseDto): User
 {
     return {
                 id: dto.id,

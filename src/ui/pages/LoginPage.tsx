@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import type { LoginRequestDTO } from "../../models/dto/LoginRequestDTO";
-import type { AuthResponseDTO } from "../../models/dto/AuthResponseDTO";
+import type { UserLogintDto } from "../../models/dto/UserLoginDto";
+import type { AuthResponseDto } from "../../models/dto/AuthResponseDto";
 
 import { login } from "../../services/api/auth.service";
 import { useAuthHook } from "../../services/auth/use-auth-hook";
@@ -31,7 +31,7 @@ export default function LoginPage()
 
         try
         {
-            const payload: LoginRequestDTO = {username, password};
+            const payload: UserLogintDto = {username, password};
 
             // Send credentials to backend
             const authResponse = await login(payload);
@@ -60,8 +60,8 @@ export default function LoginPage()
 
       <form onSubmit={handleSubmit}>
         <input
-          type="email"
-          placeholder="Email"
+          type="text"
+          placeholder="Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           required

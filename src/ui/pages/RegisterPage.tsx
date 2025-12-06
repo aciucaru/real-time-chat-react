@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import type { SignUpRequestDTO } from "../../models/dto/SignUpRequestDTO";
-import { signUp } from "../../services/api/auth.service";
+import type { UserRegisterDto } from "../../models/dto/UserRegisterDto";
+import { register } from "../../services/api/auth.service";
 
 export default function RegisterPage()
 {
@@ -22,16 +22,16 @@ export default function RegisterPage()
         setSuccess(null);
         setIsSubmitting(true);
 
-        const payload: SignUpRequestDTO = {
+        const payload: UserRegisterDto = {
             username: username,
             password: password
         };
 
         try
         {
-            await signUp(payload);
+            await register(payload);
 
-            setSuccess("Accoutn successfully created!");
+            setSuccess("Account successfully created!");
             setTimeout( () => { navigate("/login"); }, 1000 );
         }
         catch (error: any)
@@ -49,7 +49,7 @@ export default function RegisterPage()
             type="text"
             placeholder="Username"
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(evt) => setUsername(evt.target.value)}
             required
             />
             
@@ -57,7 +57,7 @@ export default function RegisterPage()
             type="password"
             placeholder="Password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(evt) => setPassword(evt.target.value)}
             required
             />
 

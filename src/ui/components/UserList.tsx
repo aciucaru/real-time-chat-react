@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { UserResponseDTO } from "../../models/dto/UserResponseDTO";
+import type { UserResponseDto } from "../../models/dto/UserResponseDto";
 
 import { useAuthHook } from "../../services/auth/use-auth-hook";
 import { getAllUsers } from "../../services/api/user.service";
@@ -7,7 +7,7 @@ import { getAllUsers } from "../../services/api/user.service";
 interface UserListProps
 {
     // Callback when a user is selected from the list
-    onUserSelected: (user: UserResponseDTO) => void;
+    onUserSelected: (user: UserResponseDto) => void;
 }
 
 // This component displays the list of all available users, so that the current user
@@ -16,19 +16,20 @@ export default function UserList(props: UserListProps)
 {
     const { isAuthenticated } = useAuthHook();
 
-    const [users, setUsers] = useState<UserResponseDTO[]>([]);
+    const [users, setUsers] = useState<UserResponseDto[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect( () =>
         {
-            if (!isAuthenticated)
-            {
-                setError("You must be logged in to view users");
-                setIsLoading(true);
+            // Temporarily disabled
+            // if (!isAuthenticated)
+            // {
+            //     setError("You must be logged in to view users");
+            //     setIsLoading(true);
 
-                return;
-            }
+            //     return;
+            // }
 
             // React's useEffect() cannot be async, so we create an async fucntion inside it
             // and then call it.
