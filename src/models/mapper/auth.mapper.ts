@@ -1,7 +1,7 @@
-import type { AuthResponseDTO } from "../dto/AuthResponseDTO";
+import type { AuthResponseDto } from "../dto/AuthResponseDto";
 import type { AuthResponse } from "../entity/AuthResponse";
 
-export function toAuthResponse(dto: AuthResponseDTO): AuthResponse
+export function toAuthResponse(dto: AuthResponseDto): AuthResponse
 {
     return {
         userId: dto.userId,

@@ -1,11 +1,11 @@
 import { useEffect, useRef } from "react";
-import type { MessageResponseDTO } from "../../models/dto/MessageResponseDTO";
+import type { MessageResponseDto } from "../../models/dto/MessageResponseDto";
 import { useAuthHook } from "../../services/auth/use-auth-hook";
 
 interface MessageListProps
 {
     // The list of messages fetched from outside this componenet
-    messages: MessageResponseDTO[]; // the array of messages
+    messages: MessageResponseDto[]; // the array of messages
 
     // If the messages are still loading
     loading: boolean;

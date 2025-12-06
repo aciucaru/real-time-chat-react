@@ -1,4 +1,4 @@
-export interface AuthResponseDTO
+export interface AuthResponseDto
 {
     userId: string; // UUID type on the back-end which will serialize to string in JSON format
     username: string;

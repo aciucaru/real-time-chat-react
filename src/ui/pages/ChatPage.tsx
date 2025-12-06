@@ -1,28 +1,33 @@
 import { useEffect, useState } from "react";
 
-import type { MessageResponseDTO } from "../../models/dto/MessageResponseDTO";
-import type { UserResponseDTO } from "../../models/dto/UserResponseDTO";
+import type { MessageResponseDto } from "../../models/dto/MessageResponseDto";
+import type { UserResponseDto } from "../../models/dto/UserResponseDto";
 
-import { getMessagesFromUser, sendMessage } from "../../services/api/message.service";
+import { getHistory, sendMessage } from "../../services/api/message.service";
 
 import MessageList from "../components/MessageList";
 import UserList from "../components/UserList";
 import MessageEditor from "../components/MessageEditor";
-import type { MessageRequestDTO } from "../../models/dto/MessageRequestDTO";
+import type { MessageRequestDto } from "../../models/dto/MessageRequestDto";
+import { useAuthHook } from "../../services/auth/use-auth-hook";
 
 // The main chat page
 export default function ChatPage()
 {
-    const [selectedUser, setSelectedUser] = useState<UserResponseDTO | null>(null);
-    const [messages, setMessages] = useState<MessageResponseDTO[]>([]);
+    // Get the ID of the current user
+    const { user } = useAuthHook();
+    const currentUserId = user?.id;
+
+    const [selectedUser, setSelectedUser] = useState<UserResponseDto | null>(null);
+    const [messages, setMessages] = useState<MessageResponseDto[]>([]);
     const [isLoadingMessages, setIsLoadingMessages] = useState<boolean>(false);
     const [messagesError, setMessagesError] = useState<string | null>(null);
 
     // Load corresponding messages whenever the selected user changes
     useEffect( () =>
         {
-            // If no user is selected, then do nothing
-            if (!selectedUser)
+            // If there is no curent user or no receiving user is selected, then do nothing
+            if (!currentUserId || !selectedUser)
                 return;
 
             // React's useEffect() cannot be async, so we create an async function inside it and call that
@@ -32,7 +37,7 @@ export default function ChatPage()
                 {
                     setIsLoadingMessages(true);
 
-                    const messageList = await getMessagesFromUser(selectedUser.id);
+                    const messageList = await getHistory(currentUserId, selectedUser.id);
                     setMessages(messageList);
                 }
                 catch (error: any)
@@ -53,7 +58,7 @@ export default function ChatPage()
         if (!selectedUser)
             return;
 
-        const dto: MessageRequestDTO =
+        const dto: MessageRequestDto =
         {
             senderId: "",
             receiverId: selectedUser.id,

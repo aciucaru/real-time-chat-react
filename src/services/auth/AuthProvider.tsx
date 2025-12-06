@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { axiosPublicClient } from "./axios-clients";
 import { AuthContext, type AuthContextType } from "./auth-context";
-import type { UserResponseDTO } from "../../models/dto/UserResponseDTO";
+import type { UserResponseDto } from "../../models/dto/UserResponseDto";
 
 
 /* This is a custom provider that:
@@ -15,7 +15,7 @@ export function AuthProvider({children}: {children: ReactNode})
 {
     const [accessToken, setAccessToken] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [user, setUser] = useState<UserResponseDTO | null>(null);
+    const [user, setUser] = useState<UserResponseDto | null>(null);
 
     // Refresh the acces token using HttOnly refresh cookie
     const refreshAccessToken = async () =>
