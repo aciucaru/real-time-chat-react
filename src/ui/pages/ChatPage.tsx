@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import type { MessageDTO } from "../../models/dto/MessageDTO";
+import type { MessageResponseDTO } from "../../models/dto/MessageResponseDTO";
 import type { UserResponseDTO } from "../../models/dto/UserResponseDTO";
 
 import { getMessagesFromUser, sendMessage } from "../../services/api/message.service";
@@ -8,16 +8,17 @@ import { getMessagesFromUser, sendMessage } from "../../services/api/message.ser
 import MessageList from "../components/MessageList";
 import UserList from "../components/UserList";
 import MessageEditor from "../components/MessageEditor";
+import type { MessageRequestDTO } from "../../models/dto/MessageRequestDTO";
 
-// The main 
+// The main chat page
 export default function ChatPage()
 {
     const [selectedUser, setSelectedUser] = useState<UserResponseDTO | null>(null);
-    const [messages, setMessages] = useState<MessageDTO[]>([]);
+    const [messages, setMessages] = useState<MessageResponseDTO[]>([]);
     const [isLoadingMessages, setIsLoadingMessages] = useState<boolean>(false);
     const [messagesError, setMessagesError] = useState<string | null>(null);
 
-    // Load corresponding messages whenever the selcted user changes
+    // Load corresponding messages whenever the selected user changes
     useEffect( () =>
         {
             // If no user is selected, then do nothing
@@ -52,13 +53,11 @@ export default function ChatPage()
         if (!selectedUser)
             return;
 
-        const dto: MessageDTO =
+        const dto: MessageRequestDTO =
         {
+            senderId: "",
             receiverId: selectedUser.id,
             content: content,
-            id: "",
-            senderId: "",
-            timestamp: ""
         };
 
         // Send the message
