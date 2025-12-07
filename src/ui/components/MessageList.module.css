@@ -1,0 +1,28 @@
+.mainContainer
+{
+    box-sizing: border-box;
+
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    align-content: flex-start;
+
+    margin: 0px;
+    padding: 0px;
+
+    border: solid 1px hsl(200, 30%, 30%);
+}
+
+.messageContainer
+{
+    width: 100%;
+
+    margin: 0px;
+    padding: 0px;
+
+    border: solid 1px hsl(200, 30%, 30%);
+}

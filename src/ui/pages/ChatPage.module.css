@@ -1,0 +1,95 @@
+.mainContainer
+{
+    box-sizing: border-box;
+
+    width: 90vw;
+    height: 90vh;
+
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: auto 200px;
+
+    justify-items: start;
+    align-items: start;
+    justify-content: start;
+    align-content: start;
+    gap: 0px;
+
+    margin: 0px;
+    padding: 0px;
+
+    margin: 0px;
+    padding: 0px;
+
+    border: solid 1px hsl(200, 30%, 30%);
+}
+
+.userListContainer
+{
+    box-sizing: border-box;
+
+    min-width: 200px;
+    max-width: 300px;
+
+    /* position self inside grid container */
+    grid-column: 1 / span 1;
+    grid-row: 1 / span 2;
+
+    /* justify and align self inside grid container */
+    justify-self: stretch;
+    align-self: stretch;
+
+    /* layout container for children */
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    align-content: flex-start;
+
+    margin: 0px;
+    padding: 0px;
+
+    border: solid 1px hsl(200, 30%, 30%);
+}
+
+.messageListContainer
+{
+    box-sizing: border-box;
+
+    /* position self inside grid container */
+    grid-column: 2 / span 1;
+    grid-row: 1 / span 1;
+
+    /* justify and align self inside grid container */
+    justify-self: stretch;
+    align-self: stretch;
+
+    /* for children */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    align-content: flex-start;
+
+    overflow-y: auto; /* auto scroll if message history exceeds height */
+
+    margin: 0px;
+    padding: 0px;
+
+    border: solid 1px hsl(200, 30%, 30%);
+}
+
+.messageEditorContainer
+{
+    /* position self inside grid container */
+    grid-column: 2 / span 1;
+    grid-row: 2 / span 1;
+
+    /* justify and align self inside grid container */
+    justify-self: stretch;
+    align-self: stretch;
+
+    /* margin: 0px; */
+    margin-top: auto;
+    padding: 0px;
+}

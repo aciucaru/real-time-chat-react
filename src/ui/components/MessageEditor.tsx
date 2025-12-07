@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import styles from "./MessageEditor.module.css";
+
 interface MessageEditorProps
 {
     onSend: (content: string) => Promise<void>;
@@ -37,7 +39,7 @@ export default function MessageEditor({onSend}: MessageEditorProps)
     ** It bassically detects wheter the user has pressed Enter (but without pressing Shift).
     ** Shift + Enter is allowed, because it means the user is trying to add a new line, not
     ** to send the message. */
-    const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) =>
+    const onKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) =>
     {
         // If the user is only pressing Enter (not Shift + Enter), then he wants to send the message
         if (event.key === "Enter" && !event.shiftKey)
@@ -50,15 +52,15 @@ export default function MessageEditor({onSend}: MessageEditorProps)
     };
 
     return (
-        <div>
-            <input
-            type="text"
-            value={content}
-            placeholder="Write a message…"
-            onChange={(e) => setContent(e.target.value)}
-            onKeyDown={onKeyDown}
-            disabled={isSending}
-            />
+        <div className={`${styles.mainContainer}`}>
+            <textarea
+                className={`${styles.messageEditor}`}
+                value={content}
+                placeholder="Write a message…"
+                onChange={(e) => setContent(e.target.value)}
+                onKeyDown={onKeyDown}
+                disabled={isSending}
+            ></textarea>
 
             <button
             onClick={handleSend}
