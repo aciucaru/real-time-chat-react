@@ -9,8 +9,8 @@ const BASE_URL = "http://localhost:8080/api/users";
 // Only a loged-in user is able to get the list of all users.
 export async function getAllUsers(): Promise<UserResponseDto[]>
 {
-    // const response = await axiosAuthClient.get<UserResponseDto[]>(BASE_URL);
-    const response = await axiosPublicClient.get<UserResponseDto[]>(BASE_URL);
+    const response = await axiosAuthClient.get<UserResponseDto[]>(BASE_URL);
+    // const response = await axiosPublicClient.get<UserResponseDto[]>(BASE_URL);
 
     return response.data;
 }
