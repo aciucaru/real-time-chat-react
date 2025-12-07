@@ -1,6 +1,6 @@
 // src/services/axiosPublicClient.ts
 import axios from "axios";
-import { authState } from "./auth-state";
+import { getToken } from "./token-storage";
 
 const BASE_URL = "";
 const API_URL = BASE_URL + ":8080/payara.example-0.1-SNAPSHOT/resources";
@@ -26,7 +26,7 @@ export const axiosAuthClient = axios.create({
 // This also works after logout, because the last token will be old/invalid and request will fail, as expected.
 axiosAuthClient.interceptors.request.use((config) =>
 {
-    const token = authState.getToken();
+    const token = getToken();
 
     // The 'config' object is an axios request configuration object.
     // We use its 'headers' property, which also contains 'Authorization'.

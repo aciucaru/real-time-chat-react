@@ -1,17 +1,21 @@
 import { createContext } from "react";
-import axios from "axios";
 import type { UserResponseDto } from "../../models/dto/UserResponseDto";
+import type { UserLogintDto } from "../../models/dto/UserLoginDto";
 
 // The data type of the React context
 export interface AuthContextType
 {
     accessToken: string | null;
     setAccessToken: (token: string | null) => void;
-    isAuthenticated: boolean;
-    isLoading: boolean;
-    refreshAccessToken: () => Promise<void>;
+
     user: UserResponseDto | null;
     setUser: (user: UserResponseDto | null) => void;
+
+    login: (userLogin: UserLogintDto) => Promise<void>;
+    logout: () => void;
+
+    isAuthenticated: boolean;
+    isLoading: boolean;
 }
 
 /*    This is a React Context, which is basically a prop which is automatically sent to all the

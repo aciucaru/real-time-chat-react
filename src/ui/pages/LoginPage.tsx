@@ -2,16 +2,15 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import type { UserLogintDto } from "../../models/dto/UserLoginDto";
-import type { AuthResponseDto } from "../../models/dto/AuthResponseDto";
-
 import { login } from "../../services/api/auth.service";
 import { useAuthHook } from "../../services/auth/use-auth-hook";
-import { axiosPublicClient } from "../../services/auth/axios-clients";
+import { setToken } from "../../services/auth/token-storage";
+import type { UserResponseDto } from "../../models/dto/UserResponseDto";
 
 export default function LoginPage()
 {
     const navigate = useNavigate();
-    const { setAccessToken } = useAuthHook();
+    const { setAccessToken, setUser } = useAuthHook();
 
     // State for forms
     const [username, setUsername] = useState<string>("");
@@ -24,7 +23,7 @@ export default function LoginPage()
     // Form submit
     const handleSubmit = async (event: React.FormEvent) =>
     {
-        event.preventDefault;
+        event.preventDefault();
 
         setIsSubmitting(true);
         setError(null);
@@ -38,6 +37,13 @@ export default function LoginPage()
 
             // Store the received access token in React Context and in tokenStore
             setAccessToken(authResponse.token);
+            setToken(authResponse.token);
+
+            const userDto: UserResponseDto = {
+              id: authResponse.userId,
+              username: authResponse.username
+            };
+            setUser(userDto);
             
             // Redirect to chat page
             navigate("/chat");
