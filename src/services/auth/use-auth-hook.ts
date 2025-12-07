@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { AuthContext } from "./auth-context";
+import { AuthContext, type AuthContextType } from "./auth-context";
 
 /* This custom hook avoids using the token data (context) outside <AuthProvider>.
 ** This solution is sligthly better than directly calling:
@@ -13,14 +13,14 @@ import { AuthContext } from "./auth-context";
 **       const { accessToken, setAccessToken } = useContext(AuthContext); // no error message
 ** we use this:
 **       const { accessToken, setAccessToken } = useAuth(); // displays error message */
-export function useAuthHook()
+export function useAuthHook(): AuthContextType
 {
     const context = useContext(AuthContext);
 
     if (!context)
         // Here we show an explicit error message, to catch the bug, in the case
         // this is used outside <AuthProvider>
-        throw new Error("useAuth must be used inside AuthProvider");
+        throw new Error("useAuthHook must be used inside <AuthProvider>");
     
     return context;
 }
