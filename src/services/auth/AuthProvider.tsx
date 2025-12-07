@@ -2,9 +2,9 @@ import { useEffect, useState, type ReactNode } from "react";
 import { axiosAuthClient, axiosPublicClient } from "./axios-clients";
 import { AuthContext, type AuthContextType } from "./auth-context";
 import type { UserResponseDto } from "../../models/dto/UserResponseDto";
-import { authState } from "./auth-state";
 import { login as loginService } from "../api/auth.service";
 import type { UserLogintDto } from "../../models/dto/UserLoginDto";
+import { setToken } from "./token-storage";
 
 const BASE_URL = "http://localhost:8080/auth";
 
@@ -20,7 +20,8 @@ export function AuthProvider({children}: {children: ReactNode})
     const [user, setUser] = useState<UserResponseDto | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
-    const isAuthenticated = !!accessToken && !!user;
+    // const isAuthenticated = !!accessToken && !!user;
+    const isAuthenticated = !!accessToken;
 
     // Function that fetches the data (UserResponseDto: ID and username) of the current authenticated user
     // from the back-end, based on the current authenticated user's token.
@@ -31,15 +32,10 @@ export function AuthProvider({children}: {children: ReactNode})
     {
         try
         {
-            // Set the token temporarily so that the axios auth client interceptor can atach it
-            const previousToken = authState.getToken?.();
-            authState.setToken?.(token);
+            setToken(token);
 
             const response = await axiosAuthClient.get<UserResponseDto>(`${BASE_URL}/me`);
             setUser(response.data);
-
-            // Optionally, restore previous token
-            authState.setToken?.(previousToken ?? null);
         }
         catch (error: any)
         {
@@ -56,15 +52,13 @@ export function AuthProvider({children}: {children: ReactNode})
             const response = await loginService(userLoginDto);
 
             setAccessToken(response.token);
+            setToken(response.token);
 
             // Set the access token in the local storage as well, to survive a page close and a page reload
             localStorage.setItem("token", response.token);
-
-            // Fetch user info
-            await fetchCurrentUserData(response.token);
         }
         catch (error: any)
-        { throw new Error(error.message || "Loginfailed"); }
+        { throw new Error(error.message || "Login failed"); }
     };
 
     // Logout function
@@ -72,11 +66,12 @@ export function AuthProvider({children}: {children: ReactNode})
     {
         setAccessToken(null);
         setUser(null);
+
+        setToken(null);
         localStorage.removeItem("token");
     };
 
-    // Try refreshing the token at app startup.
-    // React useEffect cannot be async, so we create and call an async function inside it.
+    // Effect #1: Load token from storage on initial page load
     useEffect( () =>
         {
             // On initial load, we have no token, so we get it from localStorage, but only
@@ -91,12 +86,26 @@ export function AuthProvider({children}: {children: ReactNode})
 
             // Now we set the access token inside the React state
             setAccessToken(token);
+            setToken(token);
 
-            fetchCurrentUserData(token).catch( () => logout())
-                                        .finally( () => setIsLoading(false) );
-
+            // User will be loaded by Effect #2
+            setIsLoading(false);
         },
-        [] // Empty dependency array means this runs once on startup
+        [] // this effect runs only once
+    );
+
+    // Effect #2: whenever token changes, fetch user
+    useEffect( () =>
+        {
+            if (!accessToken)
+            {
+                setUser(null);
+                return;
+            }
+
+            fetchCurrentUserData(accessToken);
+        },
+        [accessToken] // run this effect every time accesssToken changes
     );
 
     const authData: AuthContextType = {
@@ -109,8 +118,8 @@ export function AuthProvider({children}: {children: ReactNode})
         login: login,
         logout: logout,
 
-        isAuthenticated: !!accessToken && !!user,
-        isLoading: isLoading,
+        isAuthenticated: isAuthenticated,
+        isLoading: isLoading
     };
 
     // Pass the authentication data to the custom React context (AuthContext)
