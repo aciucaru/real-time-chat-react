@@ -1,6 +1,5 @@
-# crud-test-with-auth branch
-This branch was created in order to test the basic CRUD functionality, with authentication.
-It also contains CORS settings so that both backend and frontend can be used from localhost, for testing purposes.
+# css-styling branch
+This branch was created in order to add CSS styles to the React components and pages.
 
 # React + TypeScript + Vite
 
