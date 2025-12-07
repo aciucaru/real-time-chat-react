@@ -23,34 +23,13 @@ export default function ChatPage()
     const [isLoadingMessages, setIsLoadingMessages] = useState<boolean>(false);
     const [messagesError, setMessagesError] = useState<string | null>(null);
 
-    // Load corresponding messages whenever the selected user changes
-    useEffect( () =>
-        {
-            // If there is no curent user or no receiving user is selected, then do nothing
-            if (!currentUserId || !selectedUser)
-                return;
 
-            // React's useEffect() cannot be async, so we create an async function inside it and call that
-            const loadMessages = async () =>
-            {
-                try
-                {
-                    setIsLoadingMessages(true);
-
-                    const messageList = await getHistory(currentUserId, selectedUser.id);
-                    setMessages(messageList);
-                }
-                catch (error: any)
-                { setMessagesError(error.message || "Error fetching messages") }
-                finally
-                { setIsLoadingMessages(false); }
-            };
-
-            // Call the internal async function
-            loadMessages();
-        },
-        [selectedUser, currentUserId] // run this effect whenever 'selectedUser' and 'currentUserId' change
-    );
+    // Callback when user is selected
+    const handleUserSelected = (user: UserResponseDto) =>
+    {
+        setSelectedUser(user);
+        // loadMessages(user.id); // do not call here
+    };
 
     // Callback called by MessageEditor
     const handleSendMessage = async (content: string) =>
@@ -60,7 +39,6 @@ export default function ChatPage()
             console.log("ERROR: currentUserId is null!");
             return;
         }
-
 
         const dto: MessageRequestDto =
         {
@@ -76,9 +54,42 @@ export default function ChatPage()
         setMessages( (previousList) => [...previousList, newMessage] );
     };
 
+    // Load corresponding messages whenever the selected user changes
+    useEffect( () =>
+        {
+            // If there is no curent user or no receiving user is selected, then do nothing
+            if (!currentUserId || !selectedUser)
+                return;
+
+            // Clear messages instantly
+            setMessages([]);
+
+            // React's useEffect() cannot be async, so we create an async function inside it and call that
+            const loadMessages = async () =>
+            {
+                try
+                {
+                    setIsLoadingMessages(true);
+
+                    const messageHistory = await getHistory(currentUserId, selectedUser.id);
+                    setMessages(messageHistory);
+                    setMessagesError(null);
+                }
+                catch (error: any)
+                { setMessagesError(error.message || "Error fetching messages") }
+                finally
+                { setIsLoadingMessages(false); }
+            };
+
+            // Call the internal async function
+            loadMessages();
+        },
+        [currentUserId, selectedUser, ] // run this effect whenever 'currentUserId' and 'selectedUser' change
+    );
+
     return (
     <div>
-        <UserList onUserSelected={setSelectedUser} />
+        <UserList onUserSelected={handleUserSelected} />
 
         <div>
         <MessageList
@@ -87,9 +98,7 @@ export default function ChatPage()
             error={messagesError}
         />
 
-        {selectedUser && (
-            <MessageEditor onSend={handleSendMessage} />
-        )}
+        {selectedUser && <MessageEditor onSend={handleSendMessage} />}
         </div>
     </div>
     );
