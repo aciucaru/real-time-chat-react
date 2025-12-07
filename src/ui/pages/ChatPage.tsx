@@ -49,18 +49,22 @@ export default function ChatPage()
             // Call the internal async function
             loadMessages();
         },
-        [selectedUser] // run this effect whenever 'selectedUser' changes
+        [selectedUser, currentUserId] // run this effect whenever 'selectedUser' and 'currentUserId' change
     );
 
     // Callback called by MessageEditor
     const handleSendMessage = async (content: string) =>
     {
-        if (!selectedUser)
+        if (!selectedUser || !currentUserId)
+        {
+            console.log("ERROR: currentUserId is null!");
             return;
+        }
+
 
         const dto: MessageRequestDto =
         {
-            senderId: "",
+            senderId: currentUserId,
             receiverId: selectedUser.id,
             content: content,
         };
