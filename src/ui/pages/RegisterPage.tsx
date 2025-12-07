@@ -42,7 +42,7 @@ export default function RegisterPage()
 
     return (
         <div>
-        <h2>Create Account</h2>
+        <h2>Register</h2>
 
         <form onSubmit={handleSubmit}>
             <input
