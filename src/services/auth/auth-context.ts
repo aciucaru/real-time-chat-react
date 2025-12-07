@@ -1,5 +1,4 @@
 import { createContext } from "react";
-import axios from "axios";
 import type { UserResponseDto } from "../../models/dto/UserResponseDto";
 import type { UserLogintDto } from "../../models/dto/UserLoginDto";
 
@@ -9,7 +8,6 @@ export interface AuthContextType
     accessToken: string | null;
     setAccessToken: (token: string | null) => void;
 
-    // refreshAccessToken: () => Promise<void>;
     user: UserResponseDto | null;
     setUser: (user: UserResponseDto | null) => void;
 
