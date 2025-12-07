@@ -29,6 +29,7 @@ export function AuthProvider({children}: {children: ReactNode})
                                                         );
 
             setAccessToken(response.data.accessToken);
+            setUser(response.data.user);
         }
         catch (error: any)
         { setAccessToken(null); }
