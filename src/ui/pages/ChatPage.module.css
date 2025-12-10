@@ -26,53 +26,32 @@
     box-sizing: border-box;
 
     /* position self inside grid container */
-    grid-column: 1 / span 2;
+    grid-column: 2 / span 1;
     grid-row: 1 / span 2;
 
     margin: 0px;
     padding: 0px;
 
-    background-image: url("../../../public/assets/botany-wallpaper-in-dawn-3120-mm-architextures.jpg");
+    background-image: url("../../../public/assets/vecteezy_floral-pattern-in-seamless-style_8060309-mini.png");
     background-repeat: repeat;
-    filter: invert(1.0) brightness(0.7) saturate(0.7); /* ilter */
+    filter: brightness(0.7) saturate(0.5); /* ilter */
     /* adding filters to an element changes it z-index and makes appear on top, so we reset the z-index */
     z-index: -100;
     /* background-attachment: fixed; */
 }
 
-.userListBackground
-{
-    box-sizing: border-box;
-
-    /* position self inside grid container */
-    grid-column: 1 / span 1;
-    grid-row: 1 / span 2;
-
-    margin: 0px;
-    padding: 0px;
-
-    background-image: url("../../../public/assets/vecteezy_cute-vintage-hand-drawn-flower-pattern-10-mini-1.png");
-    background-repeat: repeat;
-    filter: brightness(0.4) contrast(1.1) saturate(0.7); /* filter */
-    /* adding filters to an element changes it z-index and makes appear on top, so we reset the z-index */
-    z-index: -99;
-    /* background-attachment: fixed; */
-}
-
-.backgroundGradient
+.mainBackgroundGradient
 {
     height: 100%;
     width: 100%;
-    position: fixed;
-    left: 0;
-    right: 0;
-    z-index: 2;
-    display: block;
+
+    grid-column: 2 / span 1;
+    grid-row: 1 / span 2;
 
     padding: 0px;
     margin: 0px;
 
-    background: radial-gradient(ellipse at top, hsla(207, 38%, 18%, 0.6) 0%, hsla(207, 30%, 5%, 0.6) 50%);
+    background: radial-gradient(ellipse at center, hsla(200, 20%, 5%, 0.5) 0%, hsla(240, 4%, 1%, 0.75) 90%);
 }
 
 .userListContainer
