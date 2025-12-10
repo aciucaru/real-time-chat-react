@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAuthHook } from "../auth/use-auth-hook";
 
-type IncomingPrivate =
+export type IncomingPrivate =
 {
     type: "private";
     from: number;
@@ -19,7 +19,7 @@ type Incoming = IncomingPrivate | IncomingOnLine | { [k: string]: any };
 
 type MessageHandler = (msg: Incoming) => void;
 
-const WS_PATH = "/ws";
+const WS_PATH = "ws://localhost:8080/ws/chat";
 
 /* Special hook for React:
 ** - opens a WebSocket at ws://<host>/ws?token=... using VITE_API_URL to compute origin
@@ -90,12 +90,14 @@ export function useChatSocket()
 
                 // Build final URL in the expected form of: ?token=...
                 const token = accessToken ?? "";
-                return `${origin}${WS_PATH}?token=${encodeURIComponent(token)}`;
+                // return `${origin}${WS_PATH}?token=${encodeURIComponent(token)}`;
+                return `${WS_PATH}?token=${encodeURIComponent(token)}`;
             }
             catch
             {
                 // Fallback solution for building URL
                 const token = accessToken ?? "";
+                // return `${WS_PATH}?token=${encodeURIComponent(token)}`;
                 return `${WS_PATH}?token=${encodeURIComponent(token)}`;
             }
         },
@@ -118,6 +120,8 @@ export function useChatSocket()
 
             let didCancel = false;
             const url = buildWsUrl();
+            console.log("Connecting to WebSocket:", url);
+
             let ws: WebSocket;
 
             try
