@@ -91,6 +91,9 @@ export default function ChatPage()
 
     return (
     <div className={`${styles.mainContainer}`}>
+        <div className={`${styles.mainBackground}`}></div>
+        <div className={`${styles.userListBackground}`}></div>
+
         <div className={`${styles.userListContainer}`}>
             <UserList onUserSelected={handleUserSelected} />
         </div>

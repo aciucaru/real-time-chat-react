@@ -30,12 +30,16 @@
     align-content: flex-start;
 
     margin: 0px;
-    padding: 0px;
+    padding: 10px;
 
     border: solid 1px hsl(200, 30%, 30%);
 }
 
 .userContainer:hover
 {
-    background-color: hsl(200, 30%, 20%);
+    background-color: hsla(209, 20%, 50%, 0.3);
+
+    /* Blur effect */
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(10px); /* Safari */
 }
