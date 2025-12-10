@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useAuthHook } from "../../auth/use-auth-hook";
+import { useAuthHook } from "../auth/use-auth-hook";
 
 type IncomingPrivate =
 {
