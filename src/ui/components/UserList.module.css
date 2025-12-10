@@ -1,0 +1,51 @@
+.mainContainer
+{
+    box-sizing: border-box;
+
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    align-content: flex-start;
+
+    width: 100%;
+    height: 100%;
+
+    margin: 0px;
+    padding: 0px;
+
+    background: radial-gradient(ellipse at center bottom, hsla(220, 25%, 10%, 1.0) 0%, hsla(220, 25%, 5%, 1.0) 80%);
+
+    /* Blur effect */
+    /* backdrop-filter: blur(5px); */
+    /* -webkit-backdrop-filter: blur(10px); */
+
+    border: solid 1px hsl(220, 10%, 30%);
+}
+
+.userContainer
+{
+    box-sizing: border-box;
+
+    width: 100%;
+
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    align-content: flex-start;
+
+    margin: 0px;
+    padding: 10px;
+
+    border: solid 1px hsl(220, 10%, 30%);
+}
+
+.userContainer:hover
+{
+    background-color: hsla(209, 20%, 50%, 0.3);
+
+    /* Blur effect */
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(10px); /* Safari */
+}

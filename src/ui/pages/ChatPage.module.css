@@ -1,0 +1,116 @@
+.mainContainer
+{
+    box-sizing: border-box;
+
+    width: 90vw;
+    height: 90vh;
+
+    display: grid;
+    grid-template-columns: minmax(100px, 20%) 1fr;
+    grid-template-rows: 1fr minmax(100px, 20%);
+
+    justify-items: stretch; /* Aligns grid items along the inline (row) axis */
+    align-items: stretch; /* aligns along the block (column) axis) */
+    justify-content: stretch;
+    align-content: stretch;
+    gap: 0px;
+
+    margin: 0px;
+    padding: 0px;
+
+    border: solid 1px hsl(200, 30%, 30%);
+}
+
+.mainBackground
+{
+    box-sizing: border-box;
+
+    /* position self inside grid container */
+    grid-column: 2 / span 1;
+    grid-row: 1 / span 2;
+
+    margin: 0px;
+    padding: 0px;
+
+    background-image: url("../../../public/assets/vecteezy_floral-pattern-in-seamless-style_8060309-mini.png");
+    background-repeat: repeat;
+    filter: brightness(0.7) saturate(0.5); /* ilter */
+    /* adding filters to an element changes it z-index and makes appear on top, so we reset the z-index */
+    z-index: -100;
+    /* background-attachment: fixed; */
+}
+
+.mainBackgroundGradient
+{
+    height: 100%;
+    width: 100%;
+
+    grid-column: 2 / span 1;
+    grid-row: 1 / span 2;
+
+    padding: 0px;
+    margin: 0px;
+
+    background: radial-gradient(ellipse at center, hsla(200, 20%, 5%, 0.5) 0%, hsla(240, 4%, 1%, 0.75) 90%);
+}
+
+.userListContainer
+{
+    box-sizing: border-box;
+
+    min-width: 0;
+
+    /* position self inside grid container */
+    grid-column: 1 / span 1;
+    grid-row: 1 / span 2;
+
+    /* layout container for children */
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    align-content: flex-start;
+
+    overflow-y: auto; /* auto scroll if message history exceeds height */
+
+    margin: 0px;
+    padding: 0px;
+
+    border: solid 1px hsl(200, 30%, 30%);
+}
+
+.messageListContainer
+{
+    box-sizing: border-box;
+
+    /* position self inside grid container */
+    grid-column: 2 / span 1;
+    grid-row: 1 / span 2;
+
+    /* for children */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    align-content: flex-start;
+
+    overflow-y: auto; /* auto scroll if message history exceeds height */
+
+    margin: 0px;
+    padding: 0px;
+
+    border: solid 1px hsl(200, 30%, 30%);
+}
+
+.messageEditorContainer
+{
+    box-sizing: border-box;
+
+    /* position self inside grid container */
+    grid-column: 2 / span 1;
+    grid-row: 2 / span 1;
+
+    margin: 0px;
+    margin-top: auto; /* important, so it always stays glued to the bottom */
+    padding: 0px;
+}

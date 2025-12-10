@@ -4,6 +4,8 @@ import type { UserResponseDto } from "../../models/dto/UserResponseDto";
 import { useAuthHook } from "../../services/auth/use-auth-hook";
 import { getAllUsers } from "../../services/api/user.service";
 
+import styles from "./UserList.module.css";
+
 interface UserListProps
 {
     // Callback when a user is selected from the list
@@ -68,19 +70,18 @@ export default function UserList(props: UserListProps)
         return <div>No users found</div>;
 
     return (
-    <div>
+    <div className={`${styles.mainContainer}`}>
         <h3>Users</h3>
 
-        <ul>
-            {users.map((user) => (
-                <li
-                key={user.id}
-                onClick={() => props.onUserSelected(user)}
-                >
+        {users.map((user) => (
+            <div
+            key={user.id}
+            onClick={() => props.onUserSelected(user)}
+            className={`${styles.userContainer}`}
+            >
                 <div>{user.username}</div>
-                </li>
-            ))}
-        </ul>
+            </div>
+        ))}
     </div>
     );
 }

@@ -11,6 +11,8 @@ import MessageEditor from "../components/MessageEditor";
 import type { MessageRequestDto } from "../../models/dto/MessageRequestDto";
 import { useAuthHook } from "../../services/auth/use-auth-hook";
 
+import styles from "./ChatPage.module.css";
+
 // The main chat page
 export default function ChatPage()
 {
@@ -88,18 +90,28 @@ export default function ChatPage()
     );
 
     return (
-    <div>
-        <UserList onUserSelected={handleUserSelected} />
+    <div className={`${styles.mainContainer}`}>
+        <div className={`${styles.mainBackground}`}></div>
+        <div className={`${styles.mainBackgroundGradient}`}></div>
 
-        <div>
-        <MessageList
-            messages={messages}
-            loading={isLoadingMessages}
-            error={messagesError}
-        />
-
-        {selectedUser && <MessageEditor onSend={handleSendMessage} />}
+        <div className={`${styles.userListContainer}`}>
+            <UserList onUserSelected={handleUserSelected} />
         </div>
+
+        <div className={`${styles.messageListContainer}`}>
+            <MessageList
+                messages={messages}
+                loading={isLoadingMessages}
+                error={messagesError}
+            />
+        </div>
+
+
+        {selectedUser &&
+            <div className={`${styles.messageEditorContainer}`}>
+                <MessageEditor onSend={handleSendMessage}/>
+            </div>
+        }
     </div>
     );
 }

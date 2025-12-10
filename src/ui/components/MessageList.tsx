@@ -2,6 +2,8 @@ import { useEffect, useRef } from "react";
 import type { MessageResponseDto } from "../../models/dto/MessageResponseDto";
 import { useAuthHook } from "../../services/auth/use-auth-hook";
 
+import styles from "./MessageList.module.css";
+
 interface MessageListProps
 {
     // The list of messages fetched from outside this componenet
@@ -46,7 +48,7 @@ export default function MessageList(
         return <div>{error}</div>
 
     return (
-    <div>
+    <div className={`${styles.mainContainer}`}>
         {messages.map( (msg) =>
             {
                 // Used for displaying messages diferently
@@ -54,7 +56,8 @@ export default function MessageList(
 
                 // Here we convert (map) the message DTO to an HTML version of it
                 return (
-                    <div key={msg.id}>
+                    <div key={msg.id}
+                    className={`${styles.messageContainer}`}>
                         <div>{msg.content}</div>
                         <div>{new Date(msg.timestamp).toLocaleTimeString()}</div>
                     </div>
