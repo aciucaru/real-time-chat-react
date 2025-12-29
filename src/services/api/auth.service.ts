@@ -2,7 +2,6 @@ import type { UserLogintDto } from "../../models/dto/UserLoginDto";
 import type { UserRegisterDto } from "../../models/dto/UserRegisterDto";
 import { toAuthResponse } from "../../models/mapper/auth.mapper";
 
-import axios from "axios";
 import type { AuthResponse } from "../../models/entity/AuthResponse";
 import { axiosPublicClient } from "../auth/axios-clients";
 import type { AuthResponseDto } from "../../models/dto/AuthResponseDto";

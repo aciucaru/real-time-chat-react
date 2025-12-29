@@ -1,5 +1,5 @@
-# css-styling branch
-This branch was created in order to add CSS styles to the React components and pages.
+# web-sockets branch
+This branch was created in order to add chatting functionality through WebSockets.
 
 # React + TypeScript + Vite
 

@@ -32,7 +32,7 @@
     margin: 0px;
     padding: 0px;
 
-    background-image: url("../../../public/assets/vecteezy_floral-pattern-in-seamless-style_8060309-mini.png");
+    background-image: url("../../../public/assets/vecteezy_back-to-school-doodles-in-chalkboard-mini.png");
     background-repeat: repeat;
     filter: brightness(0.7) saturate(0.5); /* ilter */
     /* adding filters to an element changes it z-index and makes appear on top, so we reset the z-index */
