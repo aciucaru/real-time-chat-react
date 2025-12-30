@@ -6,7 +6,7 @@ import styles from "./MessageList.module.css";
 
 interface MessageListProps
 {
-    // The list of messages fetched from outside this componenet
+    // The list of messages fetched from outside this component
     messages: MessageResponseDto[]; // the array of messages
 
     // If the messages are still loading

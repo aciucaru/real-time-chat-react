@@ -3,7 +3,7 @@ import { useAuthHook } from "../auth/use-auth-hook";
 
 export type IncomingPrivate =
 {
-    type: "private";
+    // type: "private";
     from: number;
     to: number;
     content: string;
@@ -363,24 +363,34 @@ export function useChatSocket() {
                     backoffRef.current = 1000;
                 };
 
-                ws.onmessage = (evt) => {
-                    try {
-                        const data = JSON.parse(evt.data);
+                // ws.onmessage = (evt) => {
+                //     try {
+                //         const data = JSON.parse(evt.data);
 
-                        if (data?.type === "onlineUsers" && Array.isArray(data.users)) {
-                            setOnlineUsers(data.users);
-                        }
+                //         if (data?.type === "onlineUsers" && Array.isArray(data.users)) {
+                //             setOnlineUsers(data.users);
+                //         }
 
-                        handlersRef.current.forEach((handler) => {
-                            try {
-                                handler(data);
-                            } catch (err) {
-                                console.error(err);
-                            }
-                        });
-                    } catch (err) {
-                        console.error("Invalid WS JSON:", err);
-                    }
+                //         handlersRef.current.forEach((handler) => {
+                //             try {
+                //                 handler(data);
+                //             } catch (err) {
+                //                 console.error(err);
+                //             }
+                //         });
+                //     } catch (err) {
+                //         console.error("Invalid WS JSON:", err);
+                //     }
+                // };
+                ws.onmessage = (evt) =>
+                {
+                    const data = JSON.parse(evt.data);
+
+                    if (data?.type === "onlineUsers")
+                        setOnlineUsers(data.users);
+                    else if (data?.content && data?.from)
+                        // treat it as a chat message
+                        handlersRef.current.forEach(handler => handler(data));
                 };
 
                 ws.onclose = () => {
