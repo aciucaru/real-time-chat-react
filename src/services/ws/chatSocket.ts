@@ -38,16 +38,43 @@ export function useChatSocket() {
     }, []);
 
     // Send JSON through WebSocket (queue if not open)
-    const sendJson = useCallback((obj: any) => {
-        const ws = wsRef.current;
+    // const sendJson = useCallback((obj: any) => {
+    //     const ws = wsRef.current;
 
-        if (!ws || ws.readyState !== WebSocket.OPEN) {
-            messageQueueRef.current.push(obj);
-            return;
-        }
+    //     if (!ws || ws.readyState !== WebSocket.OPEN) {
+    //         messageQueueRef.current.push(obj);
+    //         return;
+    //     }
 
-        ws.send(JSON.stringify(obj));
-    }, []);
+    //     ws.send(JSON.stringify(obj));
+    // }, []);
+
+    const sendJson = useCallback((data: any) =>
+        {
+            const socket = wsRef.current; // Get the actual current socket from the ref
+
+            if (wsRef.current && wsRef.current.readyState == WebSocket.OPEN)
+            {
+                const payload = JSON.stringify(data);
+                // console.log("ACTUAL BYTES LEAVING BROWSER:", payload);
+                console.log(">>> PUSHING BYTES TO HARDWARE:", payload);
+
+                // socket.send(payload);
+                wsRef.current.send(payload);
+            }
+            else
+            {
+                // 2. If it's not open, we log why
+                // const state = socket ? socket.readyState : "NULL";
+                // console.warn(`WebSocket not ready (State: ${state}). Queuing message.`);
+                console.error("SEND FAILURE: wsRef.current is:", wsRef.current ? "CLOSED" : "NULL");
+
+                // Optional: If socket is closed, you could push to messageQueueRef here
+                messageQueueRef.current.push(data);
+            }
+        }, [] // we don't need to place 'wsRef' here because refs don't change
+    );
+
 
     // Send a chat message
     const sendMessage = useCallback((to: number, content: string) =>
@@ -96,7 +123,11 @@ export function useChatSocket() {
 
                 ws.onopen = () =>
                 {
-                    if (didCancel) return;
+                    console.log("WebSocket OPENED");
+
+                    if (didCancel)
+                        return;
+
                     setConnected(true);
 
                     while (messageQueueRef.current.length > 0) {
@@ -109,7 +140,8 @@ export function useChatSocket() {
 
                 ws.onmessage = (evt) =>
                 {
-                    console.log("WS RAW:", evt.data);
+                    // console.log("WS RAW:", evt.data);
+                    console.log("!!! HARDWARE LEVEL WS RECEIVE !!!", evt.data);
 
                     try
                     {
@@ -138,12 +170,15 @@ export function useChatSocket() {
                     { console.error("Invalid WS message:", e); }
                 };
 
-                ws.onclose = () =>
+                ws.onclose = (evt) =>
                 {
+                    console.log("WebSocket CLOSED", evt.code, evt.reason);
+
                     setConnected(false);
                     wsRef.current = null;
 
-                    if (didCancel) return;
+                    if (didCancel)
+                        return;
 
                     const wait = Math.min(30000, backoffRef.current);
                     backoffRef.current = Math.min(30000, backoffRef.current * 1.5);
