@@ -214,7 +214,7 @@ export function useChatSocket() {
     //     [buildWsUrl, accessToken, isAuthenticated]
     // );
 
-    // 1. Memoize the URL so it only changes when the token actually changes
+    // Memoize the URL so it only changes when the token actually changes
     const wsUrl = useMemo(() =>
         {
             if (!accessToken) return null;
@@ -223,7 +223,7 @@ export function useChatSocket() {
         [accessToken]
     );
 
-    // 2. The Main WebSocket Effect
+    // The Main WebSocket Effect
     useEffect(() => {
         // If no URL (no token), don't connect
         if (!wsUrl) {
