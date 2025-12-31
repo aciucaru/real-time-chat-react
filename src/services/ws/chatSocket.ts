@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuthHook } from "../auth/use-auth-hook";
 
 export type IncomingMessage =
@@ -53,9 +53,10 @@ export function useChatSocket() {
         {
             const socket = wsRef.current; // Get the actual current socket from the ref
 
-            if (wsRef.current && wsRef.current.readyState == WebSocket.OPEN)
+            if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN)
             {
                 const payload = JSON.stringify(data);
+
                 // console.log("ACTUAL BYTES LEAVING BROWSER:", payload);
                 console.log(">>> PUSHING BYTES TO HARDWARE:", payload);
 
@@ -68,6 +69,7 @@ export function useChatSocket() {
                 // const state = socket ? socket.readyState : "NULL";
                 // console.warn(`WebSocket not ready (State: ${state}). Queuing message.`);
                 console.error("SEND FAILURE: wsRef.current is:", wsRef.current ? "CLOSED" : "NULL");
+                console.error("STILL NULL - State:", wsRef.current?.readyState);
 
                 // Optional: If socket is closed, you could push to messageQueueRef here
                 messageQueueRef.current.push(data);
@@ -101,109 +103,166 @@ export function useChatSocket() {
     );
 
     // Connect WebSocket
-    useEffect(() =>
+    // useEffect(() =>
+    //     {
+    //         const url = buildWsUrl();
+    //         if (!url)
+    //             return;
+
+    //         const ws = new WebSocket(url);
+    //         wsRef.current = ws;
+
+    //         if (!isAuthenticated || !accessToken)
+    //         {
+    //             wsRef.current?.close();
+    //             wsRef.current = null;
+    //             setConnected(false);
+    //             return;
+    //         }
+
+    //         let didCancel = false;
+
+    //         const connect = () =>
+    //         {
+    //             // const url = buildWsUrl();
+    //             // if (!url) return;
+
+    //             // const ws = new WebSocket(url);
+    //             // wsRef.current = ws;
+
+    //             ws.onopen = () =>
+    //             {
+    //                 console.log("WebSocket OPENED");
+
+    //                 if (didCancel)
+    //                     return;
+
+    //                 setConnected(true);
+
+    //                 while (messageQueueRef.current.length > 0) {
+    //                     ws.send(JSON.stringify(messageQueueRef.current.shift()));
+    //                 }
+
+    //                 reconnectRef.current = 0;
+    //                 backoffRef.current = 1000;
+    //             };
+
+    //             ws.onmessage = (evt) =>
+    //             {
+    //                 // console.log("WS RAW:", evt.data);
+    //                 console.log("!!! HARDWARE LEVEL WS RECEIVE !!!", evt.data);
+
+    //                 try
+    //                 {
+    //                     const data = JSON.parse(evt.data);
+
+    //                     // still allow online user notifications
+    //                     if (data?.type === "onlineUsers" && Array.isArray(data.users)) {
+    //                         setOnlineUsers(data.users);
+    //                         return;
+    //                     }
+
+    //                     // treat everything else as a chat message
+    //                     if (typeof data?.from === "number" &&
+    //                         typeof data?.to === "number" &&
+    //                         typeof data?.content === "string")
+    //                     {
+    //                         handlersRef.current.forEach(handler =>
+    //                         {
+    //                             console.log("DISPATCH TO HANDLER:", data);
+
+    //                             handler(data);
+    //                         });
+    //                     }
+    //                 }
+    //                 catch (e)
+    //                 { console.error("Invalid WS message:", e); }
+    //             };
+
+    //             ws.onclose = (evt) =>
+    //             {
+    //                 console.log("WebSocket CLOSED", evt.code, evt.reason);
+
+    //                 setConnected(false);
+    //                 wsRef.current = null;
+
+    //                 if (didCancel)
+    //                     return;
+
+    //                 const wait = Math.min(30000, backoffRef.current);
+    //                 backoffRef.current = Math.min(30000, backoffRef.current * 1.5);
+
+    //                 setTimeout(connect, wait);
+    //             };
+
+    //             ws.onerror = (err) =>
+    //             {
+    //                 console.error("WS error", err);
+    //                 ws.close();
+    //             };
+    //         };
+
+    //         connect();
+
+    //         return () => {
+    //             didCancel = true;
+    //             wsRef.current?.close();
+    //             wsRef.current = null;
+    //             setConnected(false);
+    //         };
+    //     },
+    //     [buildWsUrl, accessToken, isAuthenticated]
+    // );
+
+    // 1. Memoize the URL so it only changes when the token actually changes
+    const wsUrl = useMemo(() =>
         {
-            if (!isAuthenticated || !accessToken)
-            {
-                wsRef.current?.close();
-                wsRef.current = null;
-                setConnected(false);
-                return;
-            }
-
-            let didCancel = false;
-
-            const connect = () =>
-            {
-                const url = buildWsUrl();
-                if (!url) return;
-
-                const ws = new WebSocket(url);
-                wsRef.current = ws;
-
-                ws.onopen = () =>
-                {
-                    console.log("WebSocket OPENED");
-
-                    if (didCancel)
-                        return;
-
-                    setConnected(true);
-
-                    while (messageQueueRef.current.length > 0) {
-                        ws.send(JSON.stringify(messageQueueRef.current.shift()));
-                    }
-
-                    reconnectRef.current = 0;
-                    backoffRef.current = 1000;
-                };
-
-                ws.onmessage = (evt) =>
-                {
-                    // console.log("WS RAW:", evt.data);
-                    console.log("!!! HARDWARE LEVEL WS RECEIVE !!!", evt.data);
-
-                    try
-                    {
-                        const data = JSON.parse(evt.data);
-
-                        // still allow online user notifications
-                        if (data?.type === "onlineUsers" && Array.isArray(data.users)) {
-                            setOnlineUsers(data.users);
-                            return;
-                        }
-
-                        // treat everything else as a chat message
-                        if (typeof data?.from === "number" &&
-                            typeof data?.to === "number" &&
-                            typeof data?.content === "string")
-                        {
-                            handlersRef.current.forEach(handler =>
-                            {
-                                console.log("DISPATCH TO HANDLER:", data);
-
-                                handler(data);
-                            });
-                        }
-                    }
-                    catch (e)
-                    { console.error("Invalid WS message:", e); }
-                };
-
-                ws.onclose = (evt) =>
-                {
-                    console.log("WebSocket CLOSED", evt.code, evt.reason);
-
-                    setConnected(false);
-                    wsRef.current = null;
-
-                    if (didCancel)
-                        return;
-
-                    const wait = Math.min(30000, backoffRef.current);
-                    backoffRef.current = Math.min(30000, backoffRef.current * 1.5);
-
-                    setTimeout(connect, wait);
-                };
-
-                ws.onerror = (err) =>
-                {
-                    console.error("WS error", err);
-                    ws.close();
-                };
-            };
-
-            connect();
-
-            return () => {
-                didCancel = true;
-                wsRef.current?.close();
-                wsRef.current = null;
-                setConnected(false);
-            };
+            if (!accessToken) return null;
+            return `${WS_PATH}?token=${encodeURIComponent(accessToken)}`;
         },
-        [buildWsUrl, accessToken, isAuthenticated]
+        [accessToken]
     );
+
+    // 2. The Main WebSocket Effect
+    useEffect(() => {
+        // If no URL (no token), don't connect
+        if (!wsUrl) {
+            console.log("No access token available, skipping WS connection.");
+            return;
+        }
+
+        console.log("Connecting to WebSocket with URL...");
+        const socket = new WebSocket(wsUrl);
+        wsRef.current = socket;
+
+        socket.onopen = () => {
+            console.log("WebSocket OPENED");
+            setConnected(true);
+            
+            // Process queued messages if any
+            while (messageQueueRef.current.length > 0 && wsRef.current?.readyState === WebSocket.OPEN) {
+                const msg = messageQueueRef.current.shift();
+                wsRef.current.send(JSON.stringify(msg));
+            }
+        };
+
+        socket.onclose = (e) => {
+            console.log("WebSocket CLOSED", e.code);
+            setConnected(false);
+            if (wsRef.current === socket) wsRef.current = null;
+        };
+
+        socket.onerror = (err) => {
+            console.error("WS Hardware Error:", err);
+        };
+
+        // Cleanup function
+        return () => {
+            console.log("Cleaning up WebSocket...");
+            socket.close();
+            if (wsRef.current === socket) wsRef.current = null;
+        };
+    }, [wsUrl]); // Only reconnects if the URL (token) changes
 
     return {
         connected,
