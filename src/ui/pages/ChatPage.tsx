@@ -8,7 +8,7 @@ import MessageEditor from "../components/MessageEditor";
 import { useAuthHook } from "../../services/auth/use-auth-hook";
 
 import styles from "./ChatPage.module.css";
-import { useChatSocket, type IncomingMessage } from "../../services/ws/chatSocket";
+import { useChatSocket, type IncomingMessage } from "../../services/web-socket/useChatSocket";
 
 // The main chat page
 export default function ChatPage()
