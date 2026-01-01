@@ -16,7 +16,7 @@ interface UserListProps
 // can choose a user to chat it.
 export default function UserList(props: UserListProps)
 {
-    const { isAuthenticated } = useAuthHook();
+    const { isAuthenticated, user } = useAuthHook();
 
     const [users, setUsers] = useState<UserResponseDto[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -71,17 +71,20 @@ export default function UserList(props: UserListProps)
 
     return (
     <div className={`${styles.mainContainer}`}>
-        <h3>Users</h3>
+        {users.map((usr) =>
+            {
+                const isCurrentUser = String(usr.id) === String(user?.id);
 
-        {users.map((user) => (
-            <div
-            key={user.id}
-            onClick={() => props.onUserSelected(user)}
-            className={`${styles.userContainer}`}
-            >
-                <div>{user.username}</div>
-            </div>
-        ))}
+                return (
+                <div
+                    key={usr.id}
+                    className={`${styles.userContainer} ${isCurrentUser ? styles.currentUser : styles.otherUser}`}
+                    onClick={() => props.onUserSelected(usr)}
+                >
+                    <div>{usr.username}</div>
+                </div>
+            );}
+        )}
     </div>
     );
 }

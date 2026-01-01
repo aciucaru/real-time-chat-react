@@ -2,9 +2,6 @@
 import axios from "axios";
 import { getToken } from "./token-storage";
 
-const BASE_URL = "";
-const API_URL = BASE_URL + ":8080/payara.example-0.1-SNAPSHOT/resources";
-
 // Public axios client
 export const axiosPublicClient = axios.create({
                                             baseURL: import.meta.env.VITE_API_URL,

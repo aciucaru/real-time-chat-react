@@ -4,30 +4,31 @@
 
     display: flex;
     flex-flow: column nowrap;
-    justify-content: flex-start;
-    align-items: flex-start;
-    align-content: flex-start;
+    justify-content: flex-start; /* the alignment along the main axis */
+    align-items: stretch; /* the alignment along the cross axis */
+    align-content: flex-start; /* aligns a flex container’s lines within when there is extra space in the cross-axis */
 
     width: 100%;
     height: 100%;
 
     margin: 0px;
     padding: 0px;
+    padding-top: 15px;
 
-    background: radial-gradient(ellipse at center bottom, hsla(220, 25%, 10%, 1.0) 0%, hsla(220, 25%, 5%, 1.0) 80%);
-
-    /* Blur effect */
-    /* backdrop-filter: blur(5px); */
-    /* -webkit-backdrop-filter: blur(10px); */
+    /* Background and blur effect */
+    background-color: hsla(220, 5%, 1%, 0.3);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px); /* Safari */
 
     border: solid 1px hsl(220, 10%, 30%);
+    border-radius: 15px;
 }
 
 .userContainer
 {
     box-sizing: border-box;
 
-    width: 100%;
+    /* width: 100%; */
 
     display: flex;
     flex-flow: column nowrap;
@@ -38,7 +39,7 @@
     margin: 0px;
     padding: 10px;
 
-    border: solid 1px hsl(220, 10%, 30%);
+    border-top: solid 1px hsl(220, 10%, 30%);
 }
 
 .userContainer:hover
@@ -48,4 +49,34 @@
     /* Blur effect */
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(10px); /* Safari */
+}
+
+/* Current user - highlighted, not clickable */
+.currentUser
+{
+    background-color: hsla(209, 100%, 50%, 0.2);
+    border-color: hsl(209, 100%, 50%);
+    cursor: default; /* Not clickable */
+}
+
+.currentUser:hover
+{
+    /* No hover effect for current user */
+    background-color: hsla(209, 100%, 50%, 0.2);
+    border-color: hsl(209, 100%, 50%);
+    transform: none;
+}
+
+/* Other users - clickable */
+.otherUser
+{
+    background-color: hsla(220, 20%, 15%, 0.5);
+    border-color: hsl(220, 10%, 30%);
+}
+
+.otherUser:hover
+{
+    background-color: hsla(220, 20%, 20%, 0.7);
+    border-color: hsl(220, 10%, 40%);
+    transform: translateX(4px);
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import type { MessageResponseDto } from "../../models/dto/MessageResponseDto";
 import type { UserResponseDto } from "../../models/dto/UserResponseDto";
@@ -8,7 +8,7 @@ import MessageEditor from "../components/MessageEditor";
 import { useAuthHook } from "../../services/auth/use-auth-hook";
 
 import styles from "./ChatPage.module.css";
-import { useChatSocket, type IncomingPrivate } from "../../services/ws/chatSocket";
+import { useChatSocket, type IncomingMessage } from "../../services/web-socket/useChatSocket";
 
 // The main chat page
 export default function ChatPage()
@@ -28,121 +28,180 @@ export default function ChatPage()
     const [isLoadingMessages, setIsLoadingMessages] = useState<boolean>(false);
     const [messagesError, setMessagesError] = useState<string | null>(null);
 
-    // For Web Sockets:
-    const { connected, sendPrivate, addMessageHandler } = useChatSocket();
+    // WebSocket
+    const { connected, sendMessage, addMessageHandler } = useChatSocket();
+
+    const selectedUserRef = useRef<UserResponseDto | null>(null);
+    const currentUserIdRef = useRef<string | null>(null);
+
+    useEffect(() => {
+        selectedUserRef.current = selectedUser;
+    }, [selectedUser]);
+
+    useEffect(() => {
+        currentUserIdRef.current = currentUserId ? String(currentUserId) : null;
+    }, [currentUserId]);
 
     // Effect for Web Sockets. When a message arrives, we append it to the message history, but only
     // if it belongs to the current conversation
-    useEffect(() =>
-        {
-            const unsubscribe = addMessageHandler((msg) => {
-                if (msg.type === "private") {
-                    const incoming = msg as IncomingPrivate;
+    useEffect(() => {
+        console.log("ChatPage effect MOUNTED (Subscribing to WebSockets)");
 
-                    // Build MessageResponseDto
-                    const message: MessageResponseDto = {
-                        id: "ws-" + Date.now(),
-                        senderId: String(incoming.from),
-                        receiverId: String(incoming.to),
-                        content: incoming.content,
-                        timestamp: new Date().toISOString(),
-                    };
+        const unsubscribe = addMessageHandler((incoming: IncomingMessage) =>
+            {
+                if (!incoming) return;
 
-                    // Always append to global message log
-                    setAllMessages(prev => [...prev, message]);
+                // Convert numbers to strings immediately
+                const fromStr = String(incoming.from);
+                const toStr = String(incoming.to);
 
-                    // Append to current conversation only if relevant
-                    if (!selectedUser || !currentUserId) return;
+                const wsMessage: MessageResponseDto = {
+                    id: "ws-" + Date.now(),
+                    senderId: fromStr,
+                    receiverId: toStr,
+                    content: incoming.content,
+                    timestamp: new Date().toISOString(),
+                };
 
-                    const isForThisChat =
-                        (String(incoming.from) === selectedUser.id && String(incoming.to) === currentUserId) ||
-                        (String(incoming.from) === currentUserId && String(incoming.to) === selectedUser.id);
+                setAllMessages(prev => [...prev, wsMessage]);
 
-                    if (isForThisChat) {
-                        setMessages(prev => [...prev, message]);
+                const sel = selectedUserRef.current;
+                const me = currentUserIdRef.current;
+
+                console.log("RECEIVE DEBUG:", {
+                    incomingFrom: fromStr,
+                    incomingTo: toStr,
+                    myIdInRef: me,
+                    selectedIdInRef: sel?.id,
+                    types: {
+                        incomingFrom: typeof fromStr,
+                        incomingTo: typeof toStr,
+                        myId: typeof me,
+                        selId: typeof sel?.id
                     }
+                });
+
+                if (!sel || !me) {
+                    console.warn("MESSAGE DROPPED: No user selected or current user ID missing");
+                    return;
+                }
+
+                // Ensure all comparisons use strings
+                const selId = String(sel.id);
+                const isForThisChat = 
+                    (wsMessage.senderId == selId && wsMessage.receiverId == me) ||
+                    (wsMessage.senderId == me && wsMessage.receiverId == selId);
+
+                console.log("MATCH CHECK:", {
+                    msgSender: wsMessage.senderId,
+                    msgReceiver: wsMessage.receiverId,
+                    selected: selId,
+                    me: me,
+                    match: isForThisChat
+                });
+
+                console.log("IS FOR THIS CHAT?", isForThisChat);
+
+                if (isForThisChat) {
+                    setMessages(prev => [...prev, wsMessage]);
                 }
             });
 
-            return () => {
+            return () =>
+            {
+                console.log("ChatPage effect UNMOUNTED (Unsubscribing from WebSockets)");
                 unsubscribe();
             };
-        }, [addMessageHandler, selectedUser, currentUserId]
+        },
+        [addMessageHandler]
     );
 
     // Send message via WebSocket
     const handleSendMessageWebSocket = async (content: string) =>
     {
-        if (!selectedUser || !currentUserId)
-            return;
+        console.log("SEND WS ->",
+        {
+            to: selectedUser?.id,
+            content,
+            connected
+        });
 
-        // If the WebSocket connection is not opened/established, then simply return, in order
-        // to avoid sending a message without a connection
+        if (!selectedUser || !currentUserId)
+        {
+            console.warn("ABORT SEND — missing selectedUser or currentUserId",
+            {
+                selectedUser,
+                currentUserId
+            });
+            return;
+        }
+
         if (!connected)
         {
-            console.warn("Cannot send: WebSocket not connected yet");
+            console.warn("Cannot send — WebSocket not connected");
             return;
         }
 
-        // If there is a WebSocket connection, then try to send the message
         try
         {
-            sendPrivate(Number(selectedUser.id), content);
-
-            // Optimistically add message to UI
-            const message: MessageResponseDto = {
-                id: "local-" + Date.now(),
-                senderId: String(currentUserId),
-                receiverId: String(selectedUser.id),
-                content,
-                timestamp: new Date().toISOString()
-            };
-
-            setAllMessages(previousMessages => [...previousMessages, message]);
-            setMessages(prev => [...prev, message]);
+            // Just send - the message will come back via WebSocket
+            sendMessage(Number(selectedUser.id), content);
+            
+            // REMOVED: No more optimistic updates!
+            // The message will appear when the server echoes it back
         }
-        catch (error: any) { console.error(`Sending message through WebSocket failed: ${error}`); }
+        catch (error) { console.error("Sending via WebSocket failed:", error); }
     };
 
-    // Callback when user is selected
+
+    // Callback when user is selected.
+    // When selecting a user, show only messages of that conversation.
     const handleUserSelected = (user: UserResponseDto) =>
     {
         setSelectedUser(user);
-        // loadMessages(user.id); // do not call here ever!
 
-        // Filter allMessages to show only messages with this user
+        // Ensure consistent string comparison
+        const userId = String(user.id);
+        const currentId = String(currentUserId);
+
         setMessages(
             allMessages.filter(
-                (msg) =>
-                    (msg.senderId === String(user.id) && msg.receiverId === String(currentUserId)) ||
-                    (msg.senderId === String(currentUserId) && msg.receiverId === String(user.id))
+                msg =>
+                {
+                    const senderId = String(msg.senderId);
+                    const receiverId = String(msg.receiverId);
+
+                    return (
+                        (senderId === userId && receiverId === currentId) ||
+                        (senderId === currentId && receiverId === userId)
+                    );
+                }
             )
         );
     };
 
     return (
-    <div className={`${styles.mainContainer}`}>
-        <div className={`${styles.mainBackground}`}></div>
-        <div className={`${styles.mainBackgroundGradient}`}></div>
+        <div className={styles.mainContainer}>
+            <div className={styles.mainBackground}></div>
+            <div className={styles.mainBackgroundGradient}></div>
 
-        <div className={`${styles.userListContainer}`}>
-            <UserList onUserSelected={handleUserSelected} />
-        </div>
-
-        <div className={`${styles.messageListContainer}`}>
-            <MessageList
-                messages={messages}
-                loading={isLoadingMessages}
-                error={messagesError}
-            />
-        </div>
-
-
-        {selectedUser &&
-            <div className={`${styles.messageEditorContainer}`}>
-                <MessageEditor onSend={handleSendMessageWebSocket}/>
+            <div className={styles.userListContainer}>
+                <UserList onUserSelected={handleUserSelected} />
             </div>
-        }
-    </div>
+
+            <div className={styles.messageListContainer}>
+                <MessageList
+                    messages={messages}
+                    loading={isLoadingMessages}
+                    error={messagesError}
+                />
+            </div>
+
+            {selectedUser && (
+                <div className={styles.messageEditorContainer}>
+                    <MessageEditor onSend={handleSendMessageWebSocket} />
+                </div>
+            )}
+        </div>
     );
 }
