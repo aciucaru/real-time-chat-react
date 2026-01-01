@@ -55,12 +55,16 @@ export default function MessageList(
                 // const isMine = msg.senderId === user?.id;
                 const isMine = String(msg.senderId) === String(user?.id);
 
-                // Here we convert (map) the message DTO to an HTML version of it
+                // Here we convert/map the message DTO to HTML items
                 return (
-                    <div key={msg.id}
-                    className={`${styles.messageContainer}`}>
-                        <div>{msg.content}</div>
-                        <div>{new Date(msg.timestamp).toLocaleTimeString()}</div>
+                    <div 
+                        key={msg.id}
+                        className={`${styles.messageContainer} ${isMine ? styles.currentUserMessage : styles.receiverMessage}`}
+                    >
+                        <div className={styles.messageContent}>{msg.content}</div>
+                        <div className={styles.messageTimestamp}>
+                            {new Date(msg.timestamp).toLocaleTimeString()}
+                        </div>
                     </div>
                 );
             }

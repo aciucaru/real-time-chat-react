@@ -71,13 +71,11 @@ export default function UserList(props: UserListProps)
 
     return (
     <div className={`${styles.mainContainer}`}>
-        <h3>Users</h3>
-
         {users.map((user) => (
             <div
-            key={user.id}
-            onClick={() => props.onUserSelected(user)}
-            className={`${styles.userContainer}`}
+                key={user.id}
+                className={`${styles.userContainer}`}
+                onClick={() => props.onUserSelected(user)}
             >
                 <div>{user.username}</div>
             </div>

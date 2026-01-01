@@ -63,8 +63,8 @@ export default function MessageEditor({onSend}: MessageEditorProps)
             ></textarea>
 
             <button
-            onClick={handleSend}
-            disabled={isSending || !content.trim()}
+                onClick={handleSend}
+                disabled={isSending || !content.trim()}
             >
                 {isSending ? "Sending…" : "Send"}
             </button>

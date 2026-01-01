@@ -6,10 +6,10 @@
     height: 90vh;
 
     display: grid;
-    grid-template-columns: minmax(100px, 20%) 1fr;
-    grid-template-rows: 1fr minmax(100px, 20%);
+    grid-template-columns: minmax(200px, 25%) 1fr;
+    grid-template-rows: 1fr minmax(200px, 30%);
 
-    justify-items: stretch; /* Aligns grid items along the inline (row) axis */
+    justify-items: stretch; /* aligns grid items along the inline (row) axis */
     align-items: stretch; /* aligns along the block (column) axis) */
     justify-content: stretch;
     align-content: stretch;
@@ -17,8 +17,7 @@
 
     margin: 0px;
     padding: 0px;
-
-    border: solid 1px hsl(200, 30%, 30%);
+    /* border: solid 1px hsl(200, 30%, 30%); */
 }
 
 .mainBackground
@@ -26,15 +25,15 @@
     box-sizing: border-box;
 
     /* position self inside grid container */
-    grid-column: 2 / span 1;
+    grid-column: 1 / span 2;
     grid-row: 1 / span 2;
 
     margin: 0px;
     padding: 0px;
 
-    background-image: url("../../../public/assets/vecteezy_back-to-school-doodles-in-chalkboard-mini.png");
+    background-image: url("../../../public/assets/freepik-blue-smoky-art-abstract.jpg");
     background-repeat: repeat;
-    filter: brightness(0.7) saturate(0.5); /* ilter */
+    filter: brightness(0.9) saturate(0.9);
     /* adding filters to an element changes it z-index and makes appear on top, so we reset the z-index */
     z-index: -100;
     /* background-attachment: fixed; */
@@ -45,13 +44,13 @@
     height: 100%;
     width: 100%;
 
-    grid-column: 2 / span 1;
+    grid-column: 1 / span 2;
     grid-row: 1 / span 2;
 
     padding: 0px;
     margin: 0px;
 
-    background: radial-gradient(ellipse at center, hsla(200, 20%, 5%, 0.5) 0%, hsla(240, 4%, 1%, 0.75) 90%);
+    /* background: radial-gradient(ellipse at center, hsla(200, 20%, 5%, 0.5) 0%, hsla(240, 4%, 1%, 0.75) 90%); */
 }
 
 .userListContainer
@@ -67,16 +66,17 @@
     /* layout container for children */
     display: flex;
     flex-flow: column nowrap;
-    justify-content: flex-start;
-    align-items: flex-start;
-    align-content: flex-start;
+    justify-content: center; /* the alignment along the main axis */
+    align-items: center; /* the alignment along the cross axis */
+    align-content: center; /* aligns a flex container’s lines within when there is extra space in the cross-axis */
 
+    overflow-x: hidden;
     overflow-y: auto; /* auto scroll if message history exceeds height */
 
-    margin: 0px;
+    margin: 30px;
     padding: 0px;
 
-    border: solid 1px hsl(200, 30%, 30%);
+    /* border: solid 1px hsl(200, 30%, 30%); */
 }
 
 .messageListContainer
@@ -99,7 +99,7 @@
     margin: 0px;
     padding: 0px;
 
-    border: solid 1px hsl(200, 30%, 30%);
+    /* border: solid 1px hsl(200, 30%, 30%); */
 }
 
 .messageEditorContainer
