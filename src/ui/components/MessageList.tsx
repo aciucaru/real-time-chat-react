@@ -59,7 +59,7 @@ export default function MessageList(
                 return (
                     <div 
                         key={msg.id}
-                        className={`${styles.messageContainer} ${isMine ? styles.currentUserMessage : styles.receiverMessage}`}
+                        className={`${styles.messageContainer} ${isMine ? styles.currentUserMessage : styles.otherUserMessage}`}
                     >
                         <div className={styles.messageContent}>{msg.content}</div>
                         <div className={styles.messageTimestamp}>

@@ -50,3 +50,33 @@
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(10px); /* Safari */
 }
+
+/* Current user - highlighted, not clickable */
+.currentUser
+{
+    background-color: hsla(209, 100%, 50%, 0.2);
+    border-color: hsl(209, 100%, 50%);
+    cursor: default; /* Not clickable */
+}
+
+.currentUser:hover
+{
+    /* No hover effect for current user */
+    background-color: hsla(209, 100%, 50%, 0.2);
+    border-color: hsl(209, 100%, 50%);
+    transform: none;
+}
+
+/* Other users - clickable */
+.otherUser
+{
+    background-color: hsla(220, 20%, 15%, 0.5);
+    border-color: hsl(220, 10%, 30%);
+}
+
+.otherUser:hover
+{
+    background-color: hsla(220, 20%, 20%, 0.7);
+    border-color: hsl(220, 10%, 40%);
+    transform: translateX(4px);
+}

@@ -44,7 +44,7 @@
 }
 
 /* Messages received from other user (left-aligned, gray) */
-.receiverMessage
+.otherUserMessage
 {
     align-self: flex-start;
     color: hsl(180, 60%, 80%);
@@ -75,6 +75,6 @@
     color: hsla(0, 0%, 100%, 0.8);
 }
 
-.receiverMessage .messageTimestamp {
+.otherUserMessage .messageTimestamp {
     color: hsl(180, 60%, 60%);
 }
