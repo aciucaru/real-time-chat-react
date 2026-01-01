@@ -184,9 +184,55 @@ export default function ChatPage()
     );
 
     // Send message via WebSocket
+    // const handleSendMessageWebSocket = async (content: string) =>
+    // {
+    //     console.log("SEND WS ->", {
+    //         to: selectedUser?.id,
+    //         content,
+    //         connected
+    //     });
+
+    //     if (!selectedUser || !currentUserId)
+    //     {
+    //         console.warn("ABORT SEND — missing selectedUser or currentUserId", {
+    //             selectedUser,
+    //             currentUserId
+    //         });
+
+    //         return;
+    //     }
+
+    //     if (!connected)
+    //     {
+    //         console.warn("Cannot send — WebSocket not connected");
+    //         return;
+    //     }
+
+    //     try
+    //     {
+    //         // send (backend inserts senderId)
+    //         sendMessage(Number(selectedUser.id), content);
+
+    //         // optimistic UI append
+    //         const optimistic: MessageResponseDto = {
+    //             id: "local-" + Date.now(),
+    //             senderId: String(currentUserId),
+    //             receiverId: String(selectedUser.id),
+    //             content,
+    //             timestamp: new Date().toISOString(),
+    //         };
+
+    //         setAllMessages(prev => [...prev, optimistic]);
+    //         setMessages(prev => [...prev, optimistic]);
+    //     }
+    //     catch (error)
+    //     { console.error("Sending via WebSocket failed:", error); }
+    // };
+
     const handleSendMessageWebSocket = async (content: string) =>
     {
-        console.log("SEND WS ->", {
+        console.log("SEND WS ->",
+        {
             to: selectedUser?.id,
             content,
             connected
@@ -194,11 +240,11 @@ export default function ChatPage()
 
         if (!selectedUser || !currentUserId)
         {
-            console.warn("ABORT SEND — missing selectedUser or currentUserId", {
+            console.warn("ABORT SEND — missing selectedUser or currentUserId",
+            {
                 selectedUser,
                 currentUserId
             });
-
             return;
         }
 
@@ -210,23 +256,13 @@ export default function ChatPage()
 
         try
         {
-            // send (backend inserts senderId)
+            // Just send - the message will come back via WebSocket
             sendMessage(Number(selectedUser.id), content);
-
-            // optimistic UI append
-            const optimistic: MessageResponseDto = {
-                id: "local-" + Date.now(),
-                senderId: String(currentUserId),
-                receiverId: String(selectedUser.id),
-                content,
-                timestamp: new Date().toISOString(),
-            };
-
-            setAllMessages(prev => [...prev, optimistic]);
-            setMessages(prev => [...prev, optimistic]);
+            
+            // REMOVED: No more optimistic updates!
+            // The message will appear when the server echoes it back
         }
-        catch (error)
-        { console.error("Sending via WebSocket failed:", error); }
+        catch (error) { console.error("Sending via WebSocket failed:", error); }
     };
 
 
