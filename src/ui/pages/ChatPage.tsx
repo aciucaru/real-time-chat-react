@@ -44,73 +44,6 @@ export default function ChatPage()
 
     // Effect for Web Sockets. When a message arrives, we append it to the message history, but only
     // if it belongs to the current conversation
-    // useEffect(() =>
-    //     {
-    //         console.log("ChatPage effect MOUNTED (Subscribing to WebSockets)");
-
-    //         const unsubscribe = addMessageHandler((incoming: IncomingMessage) => {
-    //             if (!incoming) return;
-
-    //             const wsMessage: MessageResponseDto = {
-    //                 id: "ws-" + Date.now(),
-    //                 senderId: String(incoming.from),
-    //                 receiverId: String(incoming.to),
-    //                 content: incoming.content,
-    //                 timestamp: new Date().toISOString(),
-    //             };
-
-    //             setAllMessages(prev => [...prev, wsMessage]);
-
-    //             const sel = selectedUserRef.current;
-    //             const me = currentUserIdRef.current;
-
-    //             console.log("RECEIVE DEBUG:",
-    //                 {
-    //                     incomingFrom: incoming.from,
-    //                     incomingTo: incoming.to,
-    //                     myIdInRef: me,
-    //                     selectedIdInRef: sel?.id,
-    //                     types:
-    //                     {
-    //                         incomingFrom: typeof incoming.from,
-    //                         myId: typeof me,
-    //                         selId: typeof sel?.id
-    //                     }
-    //                 });
-
-    //             if (!sel || !me)
-    //             {
-    //                 console.warn("MESSAGE DROPPED: No user selected or current user ID missing");
-    //                 return;
-    //             }
-
-    //             const selId = String(sel.id);
-    //             const isForThisChat = (wsMessage.senderId == selId && wsMessage.receiverId == me) ||
-    //                                     (wsMessage.senderId == me && wsMessage.receiverId == selId);
-
-    //             console.log("MATCH CHECK:",
-    //             {
-    //                 msgSender: wsMessage.senderId,
-    //                 msgReceiver: wsMessage.receiverId,
-    //                 selected: selId,
-    //                 me: me,
-    //                 match: isForThisChat
-    //             });
-
-    //             console.log("IS FOR THIS CHAT?", isForThisChat);
-
-    //             if (isForThisChat)
-    //                 setMessages(prev => [...prev, wsMessage]);
-    //         });
-
-    //         return () =>
-    //         {
-    //             console.log("ChatPage effect UNMOUNTED (Unsubscribing from WebSockets)");
-    //             unsubscribe();
-    //         };
-    //     },
-    //     [addMessageHandler]
-    // );
     useEffect(() => {
         console.log("ChatPage effect MOUNTED (Subscribing to WebSockets)");
 
@@ -184,51 +117,6 @@ export default function ChatPage()
     );
 
     // Send message via WebSocket
-    // const handleSendMessageWebSocket = async (content: string) =>
-    // {
-    //     console.log("SEND WS ->", {
-    //         to: selectedUser?.id,
-    //         content,
-    //         connected
-    //     });
-
-    //     if (!selectedUser || !currentUserId)
-    //     {
-    //         console.warn("ABORT SEND — missing selectedUser or currentUserId", {
-    //             selectedUser,
-    //             currentUserId
-    //         });
-
-    //         return;
-    //     }
-
-    //     if (!connected)
-    //     {
-    //         console.warn("Cannot send — WebSocket not connected");
-    //         return;
-    //     }
-
-    //     try
-    //     {
-    //         // send (backend inserts senderId)
-    //         sendMessage(Number(selectedUser.id), content);
-
-    //         // optimistic UI append
-    //         const optimistic: MessageResponseDto = {
-    //             id: "local-" + Date.now(),
-    //             senderId: String(currentUserId),
-    //             receiverId: String(selectedUser.id),
-    //             content,
-    //             timestamp: new Date().toISOString(),
-    //         };
-
-    //         setAllMessages(prev => [...prev, optimistic]);
-    //         setMessages(prev => [...prev, optimistic]);
-    //     }
-    //     catch (error)
-    //     { console.error("Sending via WebSocket failed:", error); }
-    // };
-
     const handleSendMessageWebSocket = async (content: string) =>
     {
         console.log("SEND WS ->",
