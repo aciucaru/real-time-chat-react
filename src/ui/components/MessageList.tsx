@@ -52,7 +52,8 @@ export default function MessageList(
         {messages.map( (msg) =>
             {
                 // Used for displaying messages diferently
-                const isMine = msg.senderId === user?.id;
+                // const isMine = msg.senderId === user?.id;
+                const isMine = String(msg.senderId) === String(user?.id);
 
                 // Here we convert (map) the message DTO to an HTML version of it
                 return (

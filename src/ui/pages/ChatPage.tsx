@@ -44,17 +44,88 @@ export default function ChatPage()
 
     // Effect for Web Sockets. When a message arrives, we append it to the message history, but only
     // if it belongs to the current conversation
-    useEffect(() =>
-        {
-            console.log("ChatPage effect MOUNTED (Subscribing to WebSockets)");
+    // useEffect(() =>
+    //     {
+    //         console.log("ChatPage effect MOUNTED (Subscribing to WebSockets)");
 
-            const unsubscribe = addMessageHandler((incoming: IncomingMessage) => {
+    //         const unsubscribe = addMessageHandler((incoming: IncomingMessage) => {
+    //             if (!incoming) return;
+
+    //             const wsMessage: MessageResponseDto = {
+    //                 id: "ws-" + Date.now(),
+    //                 senderId: String(incoming.from),
+    //                 receiverId: String(incoming.to),
+    //                 content: incoming.content,
+    //                 timestamp: new Date().toISOString(),
+    //             };
+
+    //             setAllMessages(prev => [...prev, wsMessage]);
+
+    //             const sel = selectedUserRef.current;
+    //             const me = currentUserIdRef.current;
+
+    //             console.log("RECEIVE DEBUG:",
+    //                 {
+    //                     incomingFrom: incoming.from,
+    //                     incomingTo: incoming.to,
+    //                     myIdInRef: me,
+    //                     selectedIdInRef: sel?.id,
+    //                     types:
+    //                     {
+    //                         incomingFrom: typeof incoming.from,
+    //                         myId: typeof me,
+    //                         selId: typeof sel?.id
+    //                     }
+    //                 });
+
+    //             if (!sel || !me)
+    //             {
+    //                 console.warn("MESSAGE DROPPED: No user selected or current user ID missing");
+    //                 return;
+    //             }
+
+    //             const selId = String(sel.id);
+    //             const isForThisChat = (wsMessage.senderId == selId && wsMessage.receiverId == me) ||
+    //                                     (wsMessage.senderId == me && wsMessage.receiverId == selId);
+
+    //             console.log("MATCH CHECK:",
+    //             {
+    //                 msgSender: wsMessage.senderId,
+    //                 msgReceiver: wsMessage.receiverId,
+    //                 selected: selId,
+    //                 me: me,
+    //                 match: isForThisChat
+    //             });
+
+    //             console.log("IS FOR THIS CHAT?", isForThisChat);
+
+    //             if (isForThisChat)
+    //                 setMessages(prev => [...prev, wsMessage]);
+    //         });
+
+    //         return () =>
+    //         {
+    //             console.log("ChatPage effect UNMOUNTED (Unsubscribing from WebSockets)");
+    //             unsubscribe();
+    //         };
+    //     },
+    //     [addMessageHandler]
+    // );
+    useEffect(() => {
+        console.log("ChatPage effect MOUNTED (Subscribing to WebSockets)");
+
+        const unsubscribe = addMessageHandler((incoming: IncomingMessage) =>
+            {
                 if (!incoming) return;
+
+                // Convert numbers to strings immediately
+                const fromStr = String(incoming.from);
+                const toStr = String(incoming.to);
 
                 const wsMessage: MessageResponseDto = {
                     id: "ws-" + Date.now(),
-                    senderId: String(incoming.from),
-                    receiverId: String(incoming.to),
+                    senderId: fromStr,
+                    receiverId: toStr,
                     content: incoming.content,
                     timestamp: new Date().toISOString(),
                 };
@@ -64,32 +135,31 @@ export default function ChatPage()
                 const sel = selectedUserRef.current;
                 const me = currentUserIdRef.current;
 
-                console.log("RECEIVE DEBUG:",
-                    {
-                        incomingFrom: incoming.from,
-                        incomingTo: incoming.to,
-                        myIdInRef: me,
-                        selectedIdInRef: sel?.id,
-                        types:
-                        {
-                            incomingFrom: typeof incoming.from,
-                            myId: typeof me,
-                            selId: typeof sel?.id
-                        }
-                    });
+                console.log("RECEIVE DEBUG:", {
+                    incomingFrom: fromStr,
+                    incomingTo: toStr,
+                    myIdInRef: me,
+                    selectedIdInRef: sel?.id,
+                    types: {
+                        incomingFrom: typeof fromStr,
+                        incomingTo: typeof toStr,
+                        myId: typeof me,
+                        selId: typeof sel?.id
+                    }
+                });
 
-                if (!sel || !me)
-                {
+                if (!sel || !me) {
                     console.warn("MESSAGE DROPPED: No user selected or current user ID missing");
                     return;
                 }
 
+                // Ensure all comparisons use strings
                 const selId = String(sel.id);
-                const isForThisChat = (wsMessage.senderId == selId && wsMessage.receiverId == me) ||
-                                        (wsMessage.senderId == me && wsMessage.receiverId == selId);
+                const isForThisChat = 
+                    (wsMessage.senderId == selId && wsMessage.receiverId == me) ||
+                    (wsMessage.senderId == me && wsMessage.receiverId == selId);
 
-                console.log("MATCH CHECK:",
-                {
+                console.log("MATCH CHECK:", {
                     msgSender: wsMessage.senderId,
                     msgReceiver: wsMessage.receiverId,
                     selected: selId,
@@ -99,8 +169,9 @@ export default function ChatPage()
 
                 console.log("IS FOR THIS CHAT?", isForThisChat);
 
-                if (isForThisChat)
+                if (isForThisChat) {
                     setMessages(prev => [...prev, wsMessage]);
+                }
             });
 
             return () =>
@@ -165,13 +236,22 @@ export default function ChatPage()
     {
         setSelectedUser(user);
 
+        // Ensure consistent string comparison
+        const userId = String(user.id);
+        const currentId = String(currentUserId);
+
         setMessages(
             allMessages.filter(
                 msg =>
-                    (msg.senderId === String(user.id) &&
-                        msg.receiverId === String(currentUserId)) ||
-                    (msg.senderId === String(currentUserId) &&
-                        msg.receiverId === String(user.id))
+                {
+                    const senderId = String(msg.senderId);
+                    const receiverId = String(msg.receiverId);
+
+                    return (
+                        (senderId === userId && receiverId === currentId) ||
+                        (senderId === currentId && receiverId === userId)
+                    );
+                }
             )
         );
     };

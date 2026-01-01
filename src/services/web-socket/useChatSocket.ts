@@ -122,6 +122,34 @@ export function useChatSocket() {
             }
         };
 
+        // Actual message processing
+        socket.onmessage = (event) =>
+        {
+            try
+            {
+                const data = JSON.parse(event.data);
+                console.log("WebSocket received:", data);
+
+                if (data.type === "onlineUsers")
+                {
+                    setOnlineUsers(data.users || []);
+                }
+                else if (data.type === "chat")
+                {
+                    // Notify all registered handlers
+                    handlersRef.current.forEach(handler =>
+                    {
+                        handler({
+                            from: data.from,
+                            to: data.to,
+                            content: data.content
+                        });
+                    });
+                }
+            }
+            catch (err) { console.error("Failed to parse WebSocket message:", err); }
+        };
+
         socket.onclose = (e) => {
             console.log("WebSocket CLOSED", e.code);
             setConnected(false);
