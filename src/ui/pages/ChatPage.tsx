@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import type { MessageResponseDto } from "../../models/dto/MessageResponseDto";
-import type { MessageRequestDto } from "../../models/dto/MessageRequestDto";
+// import type { MessageRequestDto } from "../../models/dto/MessageRequestDto";
 import type { UserResponseDto } from "../../models/dto/UserResponseDto";
 import MessageList from "../components/MessageList";
 import UserList from "../components/UserList";
@@ -49,13 +49,10 @@ export default function ChatPage()
     useEffect(() => {
         console.log("ChatPage effect MOUNTED (Subscribing to WebSockets)");
 
-        const unsubscribe = addMessageHandler((incoming: MessageRequestDto) =>
+        const unsubscribe = addMessageHandler((incoming: MessageResponseDto) =>
             {
-                if (!incoming) return;
-
-                // Convert numbers to strings immediately
-                // const senderStr = String(incoming.senderId);
-                // const receiverStr = String(incoming.receiverId);
+                if (!incoming)
+                    return;
 
                 const wsMessage: MessageResponseDto = {
                     id: "ws-" + Date.now(),
@@ -166,15 +163,21 @@ export default function ChatPage()
         setSelectedUser(user);
 
         // Ensure consistent string comparison
-        const userId = String(user.id);
-        const currentId = String(currentUserId);
+        // const userId = String(user.id);
+        // const currentId = String(currentUserId);
+
+        const userId = user.id;
+        const currentId = currentUserId;
 
         setMessages(
             allMessages.filter(
                 msg =>
                 {
-                    const senderId = String(msg.senderId);
-                    const receiverId = String(msg.receiverId);
+                    // const senderId = String(msg.senderId);
+                    // const receiverId = String(msg.receiverId);
+
+                    const senderId = msg.senderId;
+                    const receiverId = msg.receiverId;
 
                     return (
                         (senderId === userId && receiverId === currentId) ||
