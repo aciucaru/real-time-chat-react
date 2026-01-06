@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
 import type { MessageResponseDto } from "../../models/dto/MessageResponseDto";
-// import type { MessageRequestDto } from "../../models/dto/MessageRequestDto";
 import type { UserResponseDto } from "../../models/dto/UserResponseDto";
 import MessageList from "../components/MessageList";
 import UserList from "../components/UserList";
@@ -144,13 +143,7 @@ export default function ChatPage()
         try
         {
             // Just send - the message will come back via WebSocket
-            // sendMessage(Number(selectedUser.id), content);
-            sendMessage(selectedUser.id,
-                        content
-                    );
-            
-            // REMOVED: No more optimistic updates!
-            // The message will appear when the server echoes it back
+            sendMessage(selectedUser.id, content);
         }
         catch (error) { console.error("Sending via WebSocket failed:", error); }
     };
@@ -162,10 +155,6 @@ export default function ChatPage()
     {
         setSelectedUser(user);
 
-        // Ensure consistent string comparison
-        // const userId = String(user.id);
-        // const currentId = String(currentUserId);
-
         const userId = user.id;
         const currentId = currentUserId;
 
@@ -173,9 +162,6 @@ export default function ChatPage()
             allMessages.filter(
                 msg =>
                 {
-                    // const senderId = String(msg.senderId);
-                    // const receiverId = String(msg.receiverId);
-
                     const senderId = msg.senderId;
                     const receiverId = msg.receiverId;
 
