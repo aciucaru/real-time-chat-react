@@ -1,14 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 
 import type { MessageResponseDto } from "../../models/dto/MessageResponseDto";
+import type { MessageRequestDto } from "../../models/dto/MessageRequestDto";
 import type { UserResponseDto } from "../../models/dto/UserResponseDto";
 import MessageList from "../components/MessageList";
 import UserList from "../components/UserList";
 import MessageEditor from "../components/MessageEditor";
 import { useAuthHook } from "../../services/auth/use-auth-hook";
+import { useChatSocket } from "../../services/web-socket/useChatSocket";
 
 import styles from "./ChatPage.module.css";
-import { useChatSocket, type IncomingMessage } from "../../services/web-socket/useChatSocket";
+
 
 // The main chat page
 export default function ChatPage()
@@ -32,14 +34,14 @@ export default function ChatPage()
     const { connected, sendMessage, addMessageHandler } = useChatSocket();
 
     const selectedUserRef = useRef<UserResponseDto | null>(null);
-    const currentUserIdRef = useRef<string | null>(null);
+    const currentUserIdRef = useRef<number | null>(null);
 
     useEffect(() => {
         selectedUserRef.current = selectedUser;
     }, [selectedUser]);
 
     useEffect(() => {
-        currentUserIdRef.current = currentUserId ? String(currentUserId) : null;
+        currentUserIdRef.current = currentUserId ? currentUserId : null;
     }, [currentUserId]);
 
     // Effect for Web Sockets. When a message arrives, we append it to the message history, but only
@@ -47,18 +49,18 @@ export default function ChatPage()
     useEffect(() => {
         console.log("ChatPage effect MOUNTED (Subscribing to WebSockets)");
 
-        const unsubscribe = addMessageHandler((incoming: IncomingMessage) =>
+        const unsubscribe = addMessageHandler((incoming: MessageRequestDto) =>
             {
                 if (!incoming) return;
 
                 // Convert numbers to strings immediately
-                const fromStr = String(incoming.from);
-                const toStr = String(incoming.to);
+                // const senderStr = String(incoming.senderId);
+                // const receiverStr = String(incoming.receiverId);
 
                 const wsMessage: MessageResponseDto = {
                     id: "ws-" + Date.now(),
-                    senderId: fromStr,
-                    receiverId: toStr,
+                    senderId: incoming.senderId,
+                    receiverId: incoming.receiverId,
                     content: incoming.content,
                     timestamp: new Date().toISOString(),
                 };
@@ -69,13 +71,13 @@ export default function ChatPage()
                 const me = currentUserIdRef.current;
 
                 console.log("RECEIVE DEBUG:", {
-                    incomingFrom: fromStr,
-                    incomingTo: toStr,
+                    // incomingFrom: senderStr,
+                    incomingTo: incoming.receiverId,
                     myIdInRef: me,
                     selectedIdInRef: sel?.id,
                     types: {
-                        incomingFrom: typeof fromStr,
-                        incomingTo: typeof toStr,
+                        // incomingFrom: typeof senderStr,
+                        incomingTo: typeof incoming.receiverId,
                         myId: typeof me,
                         selId: typeof sel?.id
                     }
@@ -87,10 +89,10 @@ export default function ChatPage()
                 }
 
                 // Ensure all comparisons use strings
-                const selId = String(sel.id);
+                const selId = sel.id;
                 const isForThisChat = 
-                    (wsMessage.senderId == selId && wsMessage.receiverId == me) ||
-                    (wsMessage.senderId == me && wsMessage.receiverId == selId);
+                    (wsMessage.senderId == sel.id && wsMessage.receiverId == me) ||
+                    (wsMessage.senderId == me && wsMessage.receiverId == sel.id);
 
                 console.log("MATCH CHECK:", {
                     msgSender: wsMessage.senderId,
@@ -145,7 +147,10 @@ export default function ChatPage()
         try
         {
             // Just send - the message will come back via WebSocket
-            sendMessage(Number(selectedUser.id), content);
+            // sendMessage(Number(selectedUser.id), content);
+            sendMessage(selectedUser.id,
+                        content
+                    );
             
             // REMOVED: No more optimistic updates!
             // The message will appear when the server echoes it back

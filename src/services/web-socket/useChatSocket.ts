@@ -1,14 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuthHook } from "../auth/use-auth-hook";
+import type { MessageRequestDto } from "../../models/dto/MessageRequestDto";
 
-export type IncomingMessage =
-{
-    from: number;
-    to: number;
-    content: string;
-};
+// export type IncomingMessage =
+// {
+//     from: number;
+//     to: number;
+//     content: string;
+// };
 
-type MessageHandler = (msg: IncomingMessage) => void;
+type MessageHandler = (msg: MessageRequestDto) => void;
 
 const WS_PATH = "ws://localhost:8080/ws/chat";
 
@@ -67,11 +68,13 @@ export function useChatSocket() {
     );
 
     // Send a chat message
-    const sendMessage = useCallback((to: number, content: string) =>
+    const sendMessage = useCallback((receiverId: number, content: string) =>
         {
-            console.log("SOCKET SEND:", { to, content });
+            console.log("SOCKET SEND:", { receiverId: receiverId, content: content });
             
-            sendJson({ from: undefined, to, content });
+            sendJson({ senderId: undefined, // The backend determines the sender from the JWT token — not from the client
+                        receiverId: receiverId,
+                        content: receiverId });
         },
         [sendJson]
     );
@@ -136,15 +139,14 @@ export function useChatSocket() {
                 }
                 else if (data.type === "chat")
                 {
+                      const dto: MessageRequestDto = {
+                                    senderId: data.senderId,
+                                    receiverId: data.receiverId,
+                                    content: data.content
+                                };
+
                     // Notify all registered handlers
-                    handlersRef.current.forEach(handler =>
-                    {
-                        handler({
-                            from: data.from,
-                            to: data.to,
-                            content: data.content
-                        });
-                    });
+                    handlersRef.current.forEach(handler => handler(dto) );
                 }
             }
             catch (err) { console.error("Failed to parse WebSocket message:", err); }
