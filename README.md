@@ -1,5 +1,10 @@
-# web-sockets branch
-This branch was created in order to add chatting functionality through WebSockets.
+# jwt-websocket-reactivedb branch
+This branch was created in order to adjust the front-end (if neccessary) so that it works with the Spring WebFlux back-end, which uses a reactive database.
+
+This branch should contain functionality for:
+* JWT auth
+* WebSocket chatting
+* working with the back-end which uses a reactive database
 
 # React + TypeScript + Vite
 
