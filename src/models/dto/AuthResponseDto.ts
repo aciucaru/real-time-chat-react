@@ -1,6 +1,6 @@
 export interface AuthResponseDto
 {
-    userId: string; // UUID type on the back-end which will serialize to string in JSON format
+    userId: number; // Long type on the back-end
     username: string;
     token: string; // JWT or session token
 }

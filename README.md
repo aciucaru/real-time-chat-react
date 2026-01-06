@@ -1,5 +1,5 @@
-# web-sockets branch
-This branch was created in order to add chatting functionality through WebSockets.
+# dto-rename branch
+This branch was created in order to rename some internal classes and adapt the code to use the existing DTOs.
 
 # React + TypeScript + Vite
 
