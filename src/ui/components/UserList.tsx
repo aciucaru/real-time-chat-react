@@ -49,7 +49,7 @@ export default function UserList(props: UserListProps)
                 }
                 finally
                 {
-                    // Always stop loading spinner
+                    // Always stop loading graphics
                     setIsLoading(false);
                 }
             };
