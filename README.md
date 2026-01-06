@@ -1,10 +1,5 @@
-# jwt-websocket-reactivedb branch
-This branch was created in order to adjust the front-end (if neccessary) so that it works with the Spring WebFlux back-end, which uses a reactive database.
-
-This branch should contain functionality for:
-* JWT auth
-* WebSocket chatting
-* working with the back-end which uses a reactive database
+# dto-rename branch
+This branch was created in order to rename some internal classes and adapt the code to use the existing DTOs.
 
 # React + TypeScript + Vite
 
