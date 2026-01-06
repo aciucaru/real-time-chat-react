@@ -1,9 +1,9 @@
 /* This DTO is used both for receiveing a message from the back-end */
 export interface MessageResponseDto
 {
-    id: string; // UUID type on the back-end which will serialize to string in JSON format
-    senderId: string; // UUID type on the back-end which will serialize to string in JSON format
-    receiverId: string; // UUID type on the back-end
+    id: string;
+    senderId: number; // Long type on the back-end
+    receiverId: number; // Long type on the back-end
     content: string; // the actual message text
     timestamp: string; // 'Instant' type on the backend, 'string' ISO-8601 format on the front-end
 }

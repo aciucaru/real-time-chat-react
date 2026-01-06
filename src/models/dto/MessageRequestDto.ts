@@ -1,6 +1,6 @@
 export interface MessageRequestDto
 {
-    senderId: string; // UUID type on the back-end which will serialize to string in JSON format
-    receiverId: string; // UUID type on the back-end
+    senderId: number; // Long type on the back-end
+    receiverId: number; // Long type on the back-end
     content: string; // the actual message text
 }
