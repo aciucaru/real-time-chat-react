@@ -1,5 +1,5 @@
-# dto-rename branch
-This branch was created in order to rename some internal classes and adapt the code to use the existing DTOs.
+# logout branch
+This branch was created in order to add logout functionality.
 
 # React + TypeScript + Vite
 
