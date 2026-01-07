@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuthHook } from "../auth/use-auth-hook";
-import type { MessageRequestDto } from "../../models/dto/MessageRequestDto";
+// import type { MessageRequestDto } from "../../models/dto/MessageRequestDto";
 import type { MessageResponseDto } from "../../models/dto/MessageResponseDto";
+import type { WsMessageDto } from "../../models/dto/WsMessageDto";
+import type { OnlineUsersDto } from "../../models/dto/OnlineUsersDto";
 
 type MessageHandler = (msg: MessageResponseDto) => void;
 
@@ -21,8 +23,6 @@ export function useChatSocket()
     const wsRef = useRef<WebSocket | null>(null);
     const handlersRef = useRef<Set<MessageHandler>>(new Set());
     const messageQueueRef = useRef<any[]>([]);
-    // const reconnectRef = useRef(0);
-    // const backoffRef = useRef(1000);
 
     const [connected, setConnected] = useState(false);
     const [onlineUsers, setOnlineUsers] = useState<number[]>([]);
@@ -38,14 +38,14 @@ export function useChatSocket()
         {
             const socket = wsRef.current; // Get the actual current socket from the ref
 
-            if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN)
+            if (socket && socket.readyState === WebSocket.OPEN)
             {
                 const payload = JSON.stringify(data);
 
                 console.log(">>> PUSHING BYTES TO HARDWARE:", payload);
 
                 // socket.send(payload);
-                wsRef.current.send(payload);
+                socket.send(payload);
             }
             else
             {
@@ -124,31 +124,28 @@ export function useChatSocket()
         {
             try
             {
-                const data = JSON.parse(event.data);
-                console.log("WebSocket received:", data);
+                const wsMessage = JSON.parse(event.data) as WsMessageDto<any>;
+                console.log("WebSocket received:", wsMessage);
 
-                if (data.type === "onlineUsers")
+                switch (wsMessage.kind)
                 {
-                    setOnlineUsers(data.users || []);
-                }
-                else if (data.type === "chat")
-                {
-                    //   const dto: MessageRequestDto = {
-                    //                 // senderId: data.senderId,
-                    //                 receiverId: data.receiverId,
-                    //                 content: data.content
-                    //             };
+                    case "ONLINE_USERS":
+                        setOnlineUsers((wsMessage.payload as OnlineUsersDto).users ?? []);
+                        break;
+                    case "CHAT":
+                        const payload = wsMessage.payload as MessageResponseDto;
 
-                    const dto: MessageResponseDto = {
-                        id: data.id ?? "ws-" + Date.now(),
-                        senderId: data.senderId,
-                        receiverId: data.receiverId,
-                        content: data.content,
-                        timestamp: data.timestamp ?? new Date().toISOString()
-                    };
+                        const dto: MessageResponseDto = {
+                            id: payload.id ?? "ws-" + Date.now(),
+                            senderId: payload.senderId,
+                            receiverId: payload.receiverId,
+                            content: payload.content,
+                            timestamp: payload.timestamp ?? new Date().toISOString()
+                        };
 
-                    // Notify all registered handlers
-                    handlersRef.current.forEach(handler => handler(dto) );
+                        // Notify all registered handlers
+                        handlersRef.current.forEach(handler => handler(dto) );
+                        break;
                 }
             }
             catch (err) { console.error("Failed to parse WebSocket message:", err); }
