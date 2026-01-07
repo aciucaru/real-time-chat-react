@@ -23,8 +23,6 @@ export function useChatSocket()
     const wsRef = useRef<WebSocket | null>(null);
     const handlersRef = useRef<Set<MessageHandler>>(new Set());
     const messageQueueRef = useRef<any[]>([]);
-    // const reconnectRef = useRef(0);
-    // const backoffRef = useRef(1000);
 
     const [connected, setConnected] = useState(false);
     const [onlineUsers, setOnlineUsers] = useState<number[]>([]);
@@ -132,7 +130,6 @@ export function useChatSocket()
                 switch (wsMessage.kind)
                 {
                     case "ONLINE_USERS":
-                        // setOnlineUsers(wsMessage.users || []);
                         setOnlineUsers((wsMessage.payload as OnlineUsersDto).users ?? []);
                         break;
                     case "CHAT":
