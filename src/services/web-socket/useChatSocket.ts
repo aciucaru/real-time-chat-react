@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuthHook } from "../auth/use-auth-hook";
-// import type { MessageRequestDto } from "../../models/dto/MessageRequestDto";
 import type { MessageResponseDto } from "../../models/dto/MessageResponseDto";
 import type { WsMessageDto } from "../../models/dto/WsMessageDto";
 import type { OnlineUsersDto } from "../../models/dto/OnlineUsersDto";
