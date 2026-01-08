@@ -1,5 +1,5 @@
 # logout branch
-This branch was created in order to add logout functionality.
+This branch was created in order to add logout functionality and cleanup the code.
 
 # React + TypeScript + Vite
 
