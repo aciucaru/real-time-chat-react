@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuthHook } from "../auth/use-auth-hook";
 import type { MessageResponseDto } from "../../models/dto/MessageResponseDto";
 import type { WsMessageDto } from "../../models/dto/WsMessageDto";
@@ -20,6 +20,7 @@ export function useChatSocket()
     const { accessToken, isAuthenticated } = useAuthHook();
 
     const wsRef = useRef<WebSocket | null>(null);
+
     const handlersRef = useRef<Set<MessageHandler>>(new Set());
     const messageQueueRef = useRef<any[]>([]);
 
@@ -27,94 +28,63 @@ export function useChatSocket()
     const [onlineUsers, setOnlineUsers] = useState<number[]>([]);
 
     // Add / remove message handlers
-    const addMessageHandler = useCallback((handler: MessageHandler) => {
+    const addMessageHandler = (handler: MessageHandler) =>
+    {
         handlersRef.current.add(handler);
-        return () => handlersRef.current.delete(handler);
-    }, []);
 
-    // Send JSON through WebSocket (queue if not open)
-    const sendJson = useCallback((data: any) =>
-        {
-            const socket = wsRef.current; // Get the actual current socket from the ref
+        return () => {
+            handlersRef.current.delete(handler);
+        };
+    };
 
-            if (socket && socket.readyState === WebSocket.OPEN)
-            {
-                const payload = JSON.stringify(data);
-
-                console.log(">>> PUSHING BYTES TO HARDWARE:", payload);
-
-                // socket.send(payload);
-                socket.send(payload);
-            }
-            else
-            {
-                // 2. If it's not open, we log why
-                // const state = socket ? socket.readyState : "NULL";
-                // console.warn(`WebSocket not ready (State: ${state}). Queuing message.`);
-                console.error("SEND FAILURE: wsRef.current is:", wsRef.current ? "CLOSED" : "NULL");
-                console.error("STILL NULL - State:", wsRef.current?.readyState);
-
-                // Optional: If socket is closed, you could push to messageQueueRef here
-                messageQueueRef.current.push(data);
-            }
-        }, [] // we don't need to place 'wsRef' here because refs don't change
-    );
+    const close = () =>
+    {
+        wsRef.current?.close();
+        wsRef.current = null;
+    };
 
     // Send a chat message
-    const sendMessage = useCallback((receiverId: number, content: string) =>
+    const sendMessage = (receiverId: number, content: string) =>
+    {
+        if (wsRef.current?.readyState === WebSocket.OPEN)
         {
-            console.log("SOCKET SEND:", { receiverId: receiverId, content: content });
-            
-            sendJson({ senderId: undefined, // The backend determines the sender from the JWT token — not from the client
-                        receiverId: receiverId,
-                        content: content });
-        },
-        [sendJson]
-    );
+            wsRef.current.send( JSON.stringify({ receiverId, content }) );
+        }
+        else
+            console.warn("Attempted send while WS not open");
+    };
     
-    // Build Web Socket URL from Vite URL
-    const buildWsUrl = useCallback(() =>
-        {
-            try {
-                const token = accessToken ?? "";
-                return `${WS_PATH}?token=${encodeURIComponent(token)}`;
-            } catch {
-                const token = accessToken ?? "";
-                return `${WS_PATH}?token=${encodeURIComponent(token)}`;
-            }
-        },
-        [accessToken]
-    );
-
-    // Memoize the URL so it only changes when the token actually changes
-    const wsUrl = useMemo(() =>
-        {
-            if (!accessToken) return null;
-            return `${WS_PATH}?token=${encodeURIComponent(accessToken)}`;
-        },
-        [accessToken]
-    );
-
     // The Main WebSocket Effect
-    useEffect(() => {
-        // If no URL (no token), don't connect
-        if (!wsUrl) {
+    useEffect(() =>
+    {
+        // If no token, don't connect
+        if (!accessToken || !isAuthenticated)
+        {
             console.log("No access token available, skipping WS connection.");
             return;
         }
 
-        console.log("Connecting to WebSocket with URL...");
-        const socket = new WebSocket(wsUrl);
+        // Prevent multiple connections
+        if (wsRef.current?.readyState === WebSocket.OPEN || 
+            wsRef.current?.readyState === WebSocket.CONNECTING)
+        {
+            console.log("WebSocket already exists, skipping creation");
+            return;
+        }
+
+        console.log("Opening WebSocket with token", accessToken);
+        const socket = new WebSocket(`${WS_PATH}?token=${accessToken}`);
         wsRef.current = socket;
 
-        socket.onopen = () => {
+        socket.onopen = () =>
+        {
             console.log("WebSocket OPENED");
             setConnected(true);
             
-            // Process queued messages if any
-            while (messageQueueRef.current.length > 0 && wsRef.current?.readyState === WebSocket.OPEN) {
+            // Flush any queued messages
+            while (messageQueueRef.current.length > 0) {
                 const msg = messageQueueRef.current.shift();
-                wsRef.current.send(JSON.stringify(msg));
+                socket.send(JSON.stringify(msg));
             }
         };
 
@@ -142,37 +112,51 @@ export function useChatSocket()
                             timestamp: payload.timestamp ?? new Date().toISOString()
                         };
 
-                        // Notify all registered handlers
                         handlersRef.current.forEach(handler => handler(dto) );
                         break;
+
+                    default:
+                        console.warn("Unknown WebSockets message kind", wsMessage);
                 }
             }
-            catch (err) { console.error("Failed to parse WebSocket message:", err); }
+            catch (err)
+            { console.error("Failed to parse WebSocket message:", err); }
         };
 
-        socket.onclose = (e) => {
-            console.log("WebSocket CLOSED", e.code);
+        socket.onclose = (evt) =>
+        {
+            console.log("WebSocket CLOSED", evt.code);
             setConnected(false);
-            if (wsRef.current === socket) wsRef.current = null;
+            
+            // We do not clear wsRef immediately to prevent rapid reconnections
+            setTimeout(() =>
+            {
+                if (wsRef.current === socket)
+                    wsRef.current = null;
+            }, 1000);
         };
 
-        socket.onerror = (err) => {
+        socket.onerror = (err) =>
+        {
             console.error("WS Hardware Error:", err);
         };
 
-        // Cleanup function
+        // Cleanup function - only close if component is truly unmounting
         return () => {
             console.log("Cleaning up WebSocket...");
-            socket.close();
-            if (wsRef.current === socket) wsRef.current = null;
+            
+            // In production mode, close the socket
+            if (import.meta.env.PROD)
+                socket.close();
         };
-    }, [wsUrl]); // Only reconnects if the URL (token) changes
+    }, [accessToken, isAuthenticated]);
+
 
     return {
         connected,
         onlineUsers,
         sendMessage,
         addMessageHandler,
-        close: () => wsRef.current?.close(),
+        close: close,
     };
 }

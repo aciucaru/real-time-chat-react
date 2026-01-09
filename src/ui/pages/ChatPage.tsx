@@ -8,7 +8,6 @@ import MessageEditor from "../components/MessageEditor";
 import { useAuthHook } from "../../services/auth/use-auth-hook";
 import { useChatSocket } from "../../services/web-socket/useChatSocket";
 
-
 import styles from "./ChatPage.module.css";
 
 
@@ -40,7 +39,7 @@ export default function ChatPage()
         currentUserIdRef.current = currentUserId;
     }, [currentUserId]);
 
-    // 🔹 WebSocket subscription
+    // WebSocket subscription
     useEffect(() => {
         console.log("ChatPage mounted – subscribing to WebSocket");
 
@@ -73,7 +72,7 @@ export default function ChatPage()
         };
     }, [addMessageHandler]);
 
-    // 🔹 Derived conversation messages
+    // Derived conversation messages
     const messages = useMemo(() => {
         if (!selectedUser || !currentUserId) return [];
 
@@ -102,9 +101,10 @@ export default function ChatPage()
             });
             return;
         }
-        else if (!connected)
+        
+        if (!connected)
         {
-            console.warn("Cannot send — WebSocket not connected");
+            console.warn("Cannot send — WebSocket not connected"); // ERROR IS DISPLAYED HERE
             return;
         }
 
