@@ -1,5 +1,5 @@
 # message-history-display branch
-This branch was created in order to add functionality for displaying older messages after login, not just future messages.
+This branch was created in order to add functionality for displaying older messages after login, not just future messages send or received after login.
 
 # React + TypeScript + Vite
 
