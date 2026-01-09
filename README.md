@@ -1,5 +1,5 @@
-# logout branch
-This branch was created in order to add logout functionality and cleanup the code.
+# message-history-disaply branch
+This branch was created in order to add functionality for displaying older messageas after login, not jut future messages.
 
 # React + TypeScript + Vite
 
