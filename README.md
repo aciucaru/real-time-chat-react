@@ -1,4 +1,4 @@
-# message-history-disaply branch
+# message-history-display branch
 This branch was created in order to add functionality for displaying older messageas after login, not jut future messages.
 
 # React + TypeScript + Vite
