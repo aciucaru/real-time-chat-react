@@ -90,8 +90,10 @@ interface UserListProps
 //     );
 // }
 
-// UserList.tsx
-export default function UserList(props: UserListProps) {
+// This component displays the list of all available users, so that the current user
+// can choose a user to chat it.
+export default function UserList(props: UserListProps)
+{
     const { isAuthenticated, user } = useAuthHook();
     const { onlineUsers } = useChatSocket(); // Get online users from WebSocket
 
@@ -99,20 +101,32 @@ export default function UserList(props: UserListProps) {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        const loadUsers = async () => {
-            try {
+    useEffect(() =>
+    {
+        // React's useEffect() cannot be async, so we create an async fucntion inside it
+        // and then call it.
+        const loadUsers = async () =>
+        {
+            try
+            {
                 const userList = await getAllUsers();
                 setUsers(userList);
-            } catch (error: any) {
+            }
+            catch (error: any)
+            {
+                // If backend returns error, show message
                 setError(error?.response?.data?.message || "Failed to load users.");
-            } finally {
+            }
+            finally
+            {
+                // Always stop loading graphics
                 setIsLoading(false);
             }
         };
 
+        // Call the async function
         loadUsers();
-    }, [isAuthenticated]);
+    }, [isAuthenticated]); // run this effect every time 'isAuthenticated' changes
 
     if (isLoading)
         return <div>Loading users...</div>;
@@ -125,20 +139,39 @@ export default function UserList(props: UserListProps) {
 
     return (
         <div className={`${styles.mainContainer}`}>
-            {users.map((usr) => {
+            {users.map((usr) =>
+            {
                 const isCurrentUser = String(usr.id) === String(user?.id);
-                const isOnline = onlineUsers.includes(usr.id); // Check if online
+                const isOnline = onlineUsers.includes(usr.id); // Check if user is online
 
+                // DEBUG: Check types and values
+                console.log({
+                    userId: usr.id,
+                    userIdType: typeof usr.id,
+                    onlineUsers: onlineUsers,
+                    onlineUsersType: typeof onlineUsers[0],
+                    isOnline: isOnline,
+                    username: usr.username
+                });
+
+                // Determine the display type of the user
+                let userTypeClass = "";
+                if (isCurrentUser)
+                    userTypeClass = styles.currentUser;
+                else if (isOnline)
+                    userTypeClass = styles.otherUserOnline;
+                else
+                    userTypeClass = styles.otherUserOffline;
+
+                // Convert (map) the user data to actual HTML
                 return (
                     <div
                         key={usr.id}
-                        className={`${styles.userContainer} ${isCurrentUser ? styles.currentUser : styles.otherUser}`}
+                        className={`${styles.userContainer} ${userTypeClass}`}
                         onClick={() => props.onUserSelected(usr)}
                     >
-                        <div>
-                            {isOnline && <span className={styles.onlineUsername}>OL</span>}
-                            {usr.username}
-                        </div>
+                        <div className={styles.userIcon}></div>
+                        <div>{usr.username}</div>
                     </div>
                 );
             })}
