@@ -96,10 +96,20 @@ export default function UserList(props: UserListProps)
 {
     const { isAuthenticated, user } = useAuthHook();
     const { onlineUsers } = useChatSocket(); // Get online users from WebSocket
+    const [selectedUserId, setSelectedUserId] = useState<number | null>(null); // Track if the user is selected
 
     const [users, setUsers] = useState<UserResponseDto[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+
+    const handleUserClick = (usr: UserResponseDto) =>
+    {
+        // First of all, call the external prop callback
+        props.onUserSelected(usr);
+
+        // Then, set the selected user ID in local state
+        setSelectedUserId(usr.id);
+    };
 
     useEffect(() =>
     {
@@ -154,24 +164,38 @@ export default function UserList(props: UserListProps)
                     username: usr.username
                 });
 
+                // Determine the name to display
+                const displayName = isCurrentUser ? `${usr.username} (you)` : usr.username;
+
                 // Determine the display type of the user
-                let userTypeClass = "";
+                let userTypeClass = ""; // currentUser or otherUserOnline or otherUserOffline
+                let isSelectedClass = ""; // selectedUser or empty string
+
                 if (isCurrentUser)
+                    // The current user is always online, so there's no need to check
                     userTypeClass = styles.currentUser;
-                else if (isOnline)
-                    userTypeClass = styles.otherUserOnline;
                 else
-                    userTypeClass = styles.otherUserOffline;
+                {
+                    // Other users can be either "online" or "offline"
+                    if (isOnline)
+                        userTypeClass  = styles.otherUserOnline;
+                    else
+                        userTypeClass  = styles.otherUserOffline;
+                }
+
+                // Check if this user was selected
+                if (selectedUserId === usr.id)
+                    isSelectedClass = styles.selectedUser;
 
                 // Convert (map) the user data to actual HTML
                 return (
                     <div
                         key={usr.id}
-                        className={`${styles.userContainer} ${userTypeClass}`}
-                        onClick={() => props.onUserSelected(usr)}
+                        className={`${styles.userContainer} ${userTypeClass} ${isSelectedClass}`}
+                        onClick={() => handleUserClick(usr)}
                     >
                         <div className={styles.userIcon}></div>
-                        <div>{usr.username}</div>
+                        <div>{displayName}</div>
                     </div>
                 );
             })}
