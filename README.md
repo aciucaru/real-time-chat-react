@@ -1,6 +1,8 @@
 # http-users branch
 This branch was created in order to remove switch from getting all users via WebSockets to getting all users with regular HTTP requests.
 
+Many visual improvements have also been made.
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
