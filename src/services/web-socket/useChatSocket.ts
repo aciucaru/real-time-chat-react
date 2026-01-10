@@ -88,7 +88,12 @@ export function useChatSocket()
             }
         };
 
-        // Actual message processing
+        /* Main WebSocket message processing.
+        ** This handler get or send through WebSockets two types of data:
+        ** - the actual chat messages (case "CHAT")
+        ** - the online users list (case "ONLINE_USERS")
+        **     The list of all users is fetched via regular HTTP, but the list of "online" users
+        ** is fetched via WebSocket, so we can see in real-time when new users come online or leave. */
         socket.onmessage = (event) =>
         {
             try
