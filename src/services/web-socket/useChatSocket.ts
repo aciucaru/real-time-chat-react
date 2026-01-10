@@ -64,13 +64,26 @@ export function useChatSocket()
             return;
         }
 
-        // Prevent multiple connections
-        if (wsRef.current?.readyState === WebSocket.OPEN || 
-            wsRef.current?.readyState === WebSocket.CONNECTING)
+        // Prevent multiple connections - check if already open or connecting
+        if (wsRef.current?.readyState === WebSocket.OPEN)
         {
-            console.log("WebSocket already exists, skipping creation");
+            console.log("WebSocket already OPEN, skipping creation");
             return;
         }
+        
+        if (wsRef.current?.readyState === WebSocket.CONNECTING)
+        {
+            console.log("WebSocket already CONNECTING, skipping creation");
+            return;
+        }
+
+        // // Prevent multiple connections
+        // if (wsRef.current?.readyState === WebSocket.OPEN || 
+        //     wsRef.current?.readyState === WebSocket.CONNECTING)
+        // {
+        //     console.log("WebSocket already exists, skipping creation");
+        //     return;
+        // }
 
         console.log("Opening WebSocket with token", accessToken);
         const socket = new WebSocket(`${WS_PATH}?token=${accessToken}`);
