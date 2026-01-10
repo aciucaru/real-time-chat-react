@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import type { MessageResponseDto } from "../../models/dto/MessageResponseDto";
 import type { UserResponseDto } from "../../models/dto/UserResponseDto";
@@ -9,6 +9,7 @@ import { useAuthHook } from "../../services/auth/use-auth-hook";
 import { useChatSocket } from "../../services/web-socket/useChatSocket";
 
 import styles from "./ChatPage.module.css";
+import { getMessageHistory } from "../../services/api/message.service";
 
 
 // The main chat page
@@ -16,20 +17,16 @@ export default function ChatPage()
 {
     // Get the ID of the current user
     const { user } = useAuthHook();
-    const currentUserId = user?.id;
+    const currentUserId = user?.id ?? null;
 
     const [selectedUser, setSelectedUser] = useState<UserResponseDto | null>(null);
 
-    // We use two states for the displayed messages (the conversation)
-    // - a global list of all messages
+    // We use a single source for the displayed messages (the conversation)
     const [allMessages, setAllMessages] = useState<MessageResponseDto[]>([]);
-    // - a list of messages only for the current conversation (between the current user and a user he selected)
-    const [messages, setMessages] = useState<MessageResponseDto[]>([]);
 
-    const [isLoadingMessages, setIsLoadingMessages] = useState<boolean>(false);
-    const [messagesError, setMessagesError] = useState<string | null>(null);
+    const [isLoadingMessages] = useState<boolean>(false);
+    const [messagesError] = useState<string | null>(null);
 
-    // WebSocket
     const { connected, sendMessage, addMessageHandler } = useChatSocket();
 
     const selectedUserRef = useRef<UserResponseDto | null>(null);
@@ -40,79 +37,95 @@ export default function ChatPage()
     }, [selectedUser]);
 
     useEffect(() => {
-        currentUserIdRef.current = currentUserId ? currentUserId : null;
+        currentUserIdRef.current = currentUserId;
     }, [currentUserId]);
 
-    // Effect for Web Sockets. When a message arrives, we append it to the message history, but only
-    // if it belongs to the current conversation
+    // Effect for laoding message history when user is selected
     useEffect(() => {
-        console.log("ChatPage effect MOUNTED (Subscribing to WebSockets)");
+        if (!selectedUser || !currentUserId) return;
 
-        const unsubscribe = addMessageHandler((incoming: MessageResponseDto) =>
-            {
-                if (!incoming)
-                    return;
+        const loadMessageHistory = async () => {
+            try {
+                console.log(`Loading history between ${currentUserId} and ${selectedUser.id}`);
+                
+                const history = await getMessageHistory(currentUserId, selectedUser.id);
+                
+                console.log(`Loaded ${history.length} historical messages`);
+                
+                // Merge with existing messages and deduplicate
+                setAllMessages(prev => {
+                    const messageMap = new Map<string, MessageResponseDto>();
+                    
+                    // Add existing real-time messages
+                    prev.forEach(msg => {
+                        const key = msg.id || `${msg.senderId}-${msg.receiverId}-${msg.timestamp}`;
+                        messageMap.set(key, msg);
+                    });
+                    
+                    // Add historical messages
+                    history.forEach(msg => {
+                        const key = msg.id || `${msg.senderId}-${msg.receiverId}-${msg.timestamp}`;
+                        if (!messageMap.has(key)) {
+                            messageMap.set(key, msg);
+                        }
+                    });
+                    
+                    // Convert back to array and sort by timestamp
+                    return Array.from(messageMap.values())
+                        .sort((a, b) => 
+                            new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+                        );
+                });
+            } catch (error) {
+                console.error("Failed to load message history:", error);
+            }
+        };
 
-                const wsMessage: MessageResponseDto = {
-                    id: "ws-" + Date.now(),
-                    senderId: incoming.senderId,
-                    receiverId: incoming.receiverId,
-                    content: incoming.content,
-                    timestamp: new Date().toISOString(),
-                };
+        loadMessageHistory();
+    }, [selectedUser, currentUserId]);
 
-                setAllMessages(prev => [...prev, wsMessage]);
+    // WebSocket subscription
+    useEffect(() => {
+        console.log("ChatPage mounted – subscribing to WebSocket");
 
-                const sel = selectedUserRef.current;
-                const me = currentUserIdRef.current;
+        const unsubscribe = addMessageHandler((incoming: MessageResponseDto) => {
+            if (!incoming) return;
 
-                console.log("RECEIVE DEBUG:", {
-                    // incomingFrom: senderStr,
-                    incomingTo: incoming.receiverId,
-                    myIdInRef: me,
-                    selectedIdInRef: sel?.id,
-                    types: {
-                        // incomingFrom: typeof senderStr,
-                        incomingTo: typeof incoming.receiverId,
-                        myId: typeof me,
-                        selId: typeof sel?.id
+            const messageId =
+                incoming.id ??
+                `${incoming.senderId}-${incoming.receiverId}-${incoming.timestamp}`;
+
+            setAllMessages(prev => {
+                // Deduplicate (important for self-chat)
+                if (prev.some(m => m.id === messageId)) {
+                    return prev;
+                }
+
+                return [
+                    ...prev,
+                    {
+                        ...incoming,
+                        id: messageId
                     }
-                });
-
-                if (!sel || !me) {
-                    console.warn("MESSAGE DROPPED: No user selected or current user ID missing");
-                    return;
-                }
-
-                // Ensure all comparisons use strings
-                const selId = sel.id;
-                const isForThisChat = 
-                    (wsMessage.senderId == sel.id && wsMessage.receiverId == me) ||
-                    (wsMessage.senderId == me && wsMessage.receiverId == sel.id);
-
-                console.log("MATCH CHECK:", {
-                    msgSender: wsMessage.senderId,
-                    msgReceiver: wsMessage.receiverId,
-                    selected: selId,
-                    me: me,
-                    match: isForThisChat
-                });
-
-                console.log("IS FOR THIS CHAT?", isForThisChat);
-
-                if (isForThisChat) {
-                    setMessages(prev => [...prev, wsMessage]);
-                }
+                ];
             });
+        });
 
-            return () =>
-            {
-                console.log("ChatPage effect UNMOUNTED (Unsubscribing from WebSockets)");
-                unsubscribe();
-            };
-        },
-        [addMessageHandler]
-    );
+        return () => {
+            console.log("ChatPage unmounted – unsubscribing from WebSocket");
+            unsubscribe();
+        };
+    }, [addMessageHandler]);
+
+    // Derived conversation messages
+    const messages = useMemo(() => {
+        if (!selectedUser || !currentUserId) return [];
+
+        return allMessages.filter(msg =>
+            (msg.senderId === selectedUser.id && msg.receiverId === currentUserId) ||
+            (msg.senderId === currentUserId && msg.receiverId === selectedUser.id)
+        );
+    }, [allMessages, selectedUser, currentUserId]);
 
     // Send message via WebSocket
     const handleSendMessageWebSocket = async (content: string) =>
@@ -133,10 +146,10 @@ export default function ChatPage()
             });
             return;
         }
-
+        
         if (!connected)
         {
-            console.warn("Cannot send — WebSocket not connected");
+            console.warn("Cannot send — WebSocket not connected"); // ERROR IS DISPLAYED HERE
             return;
         }
 
@@ -148,30 +161,11 @@ export default function ChatPage()
         catch (error) { console.error("Sending via WebSocket failed:", error); }
     };
 
-
     // Callback when user is selected.
     // When selecting a user, show only messages of that conversation.
     const handleUserSelected = (user: UserResponseDto) =>
     {
         setSelectedUser(user);
-
-        const userId = user.id;
-        const currentId = currentUserId;
-
-        setMessages(
-            allMessages.filter(
-                msg =>
-                {
-                    const senderId = msg.senderId;
-                    const receiverId = msg.receiverId;
-
-                    return (
-                        (senderId === userId && receiverId === currentId) ||
-                        (senderId === currentId && receiverId === userId)
-                    );
-                }
-            )
-        );
     };
 
     return (

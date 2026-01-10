@@ -1,3 +1,4 @@
-export interface OnlineUsersDto {
-  users: number[];
+export interface OnlineUsersDto
+{
+    users: number[];
 }

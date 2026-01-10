@@ -7,7 +7,7 @@
 
     display: grid;
     grid-template-columns: minmax(200px, 25%) 1fr;
-    grid-template-rows: 1fr minmax(200px, 30%);
+    grid-template-rows: 1fr 125px;
 
     justify-items: stretch; /* aligns grid items along the inline (row) axis */
     align-items: stretch; /* aligns along the block (column) axis) */
@@ -85,7 +85,7 @@
 
     /* position self inside grid container */
     grid-column: 2 / span 1;
-    grid-row: 1 / span 2;
+    grid-row: 1 / span 1;
 
     /* for children */
     display: flex;
@@ -99,6 +99,8 @@
     margin: 0px;
     padding: 0px;
 
+    /* background: linear-gradient(to top, white, black 5%, black 90%, white ); */
+    /* mask-image: linear-gradient(to top, transparent, black 3%, black 90%, transparent ); */
     /* border: solid 1px hsl(200, 30%, 30%); */
 }
 

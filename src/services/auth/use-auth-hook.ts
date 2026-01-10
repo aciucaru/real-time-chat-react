@@ -7,12 +7,12 @@ import { AuthContext, type AuthContextType } from "./auth-context";
 **    It's a better solution because the context is provided inside <AuthProvider>, and its available
 ** to any child inside <AuthProvider>. When used outside <AuthProvider>, it isn't available anymore, so it
 ** will be 'undefined', but we won't get any error mesage, we will just have a silent bug.
-**    But this custom react hook throws an exception if the context is 'uneifend' and display a clear error
+**    But this custom react hook throws an exception if the context is 'undefind' and display a clear error
 ** message, that makes the bug easier to spot.
 **    So instead of this (bug-prone and without error message):
 **       const { accessToken, setAccessToken } = useContext(AuthContext); // no error message
 ** we use this:
-**       const { accessToken, setAccessToken } = useAuth(); // displays error message */
+**       const { accessToken, setAccessToken } = useAuth(); // displays error message if necessary */
 export function useAuthHook(): AuthContextType
 {
     const context = useContext(AuthContext);

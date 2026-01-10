@@ -46,26 +46,26 @@ export default function RegisterPage()
 
         <form onSubmit={handleSubmit}>
             <input
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(evt) => setUsername(evt.target.value)}
-            required
+                type="text"
+                placeholder="Username"
+                value={username}
+                onChange={(evt) => setUsername(evt.target.value)}
+                required
             />
             
             <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(evt) => setPassword(evt.target.value)}
-            required
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(evt) => setPassword(evt.target.value)}
+                required
             />
 
             {error && <div>{error}</div>}
             {success && <div>{success}</div>}
 
             <button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Creating account..." : "Register"}
+                {isSubmitting ? "Creating account..." : "Register"}
             </button>
         </form>
         </div>
