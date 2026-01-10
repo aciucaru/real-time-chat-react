@@ -33,6 +33,7 @@
     justify-content: flex-start;
     align-items: center;
     align-content: flex-start;
+    gap: 10px;
 
     margin: 0px;
     padding: 10px;
@@ -40,60 +41,55 @@
     border-top: solid 1px hsl(220, 10%, 30%);
 }
 
-/* .userContainer:hover
+.userContainer:hover
 {
-    background-color: hsla(209, 20%, 50%, 0.3);
-
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(5px);
-} */
+}
 
-/* Current user - highlighted, not clickable */
+/* Current user - highlighted */
 .currentUser
 {
-    color: hsl(0, 0%, 100%);
-
-    background-color: hsla(210, 100%, 50%, 0.2);
-    border-color: hsl(209, 100%, 50%);
-    cursor: default; /* Not clickable */
+    color: hsl(210, 100%, 50%);
 }
 
 .currentUser:hover
 {
-    /* No hover effect for current user */
-    background-color: hsla(210, 100%, 50%, 0.2);
-    border-color: hsl(209, 100%, 50%);
-    transform: none;
+    background-color: hsla(210, 100%, 70%, 0.2);
 }
 
 /* Other users - clickable */
 .otherUserOnline
 {
     color: hsl(0, 0%, 100%);
-    background-color: hsla(220, 20%, 15%, 0.5);
-    border-color: hsl(220, 10%, 30%);
+    /* border-color: hsl(220, 10%, 30%); */
 }
 
 .otherUserOnline:hover
 {
-    background-color: hsla(220, 20%, 20%, 0.7);
-    border-color: hsl(220, 10%, 40%);
+    /* background-color: hsla(220, 20%, 20%, 0.7); */
+    background-color: hsla(210, 100%, 70%, 0.2);
     transform: translateX(4px);
 }
 
 .otherUserOffline
 {
-    color: hsl(0, 0%, 0%);
-    background-color: hsla(220, 20%, 15%, 0.5);
-    border-color: hsl(220, 10%, 30%);
+    color: hsl(0, 0%, 50%);
+    /* background-color: hsla(220, 20%, 15%, 0.5); */
+    /* border-color: hsl(220, 10%, 30%); */
 }
 
 .otherUserOffline:hover
 {
-    background-color: hsla(220, 20%, 20%, 0.7);
-    border-color: hsl(220, 10%, 40%);
+    /* background-color: hsla(220, 20%, 20%, 0.7); */
+    background-color: hsla(210, 100%, 70%, 0.2);
     transform: translateX(4px);
+}
+
+.selectedUser
+{
+    background-color: hsla(200, 80%, 20%, 0.3);
 }
 
 .userIcon
@@ -121,10 +117,10 @@
 
 .otherUserOnline .userIcon
 {
-    filter: invert(1) brightness(0.5);
+    filter: invert(1);
 }
 
 .otherUserOffline .userIcon
 {
-    z-index: 100;
+    filter: invert(1) brightness(0.3);
 }
