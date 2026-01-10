@@ -54,6 +54,7 @@
 /* Current user - highlighted, not clickable */
 .currentUser
 {
+    color: hsl(0, 0%, 100%);
     background-color: hsla(209, 100%, 50%, 0.2);
     border-color: hsl(209, 100%, 50%);
     cursor: default; /* Not clickable */
@@ -70,6 +71,7 @@
 /* Other users - clickable */
 .otherUser
 {
+    color: hsl(0, 0%, 60%);
     background-color: hsla(220, 20%, 15%, 0.5);
     border-color: hsl(220, 10%, 30%);
 }
@@ -79,4 +81,11 @@
     background-color: hsla(220, 20%, 20%, 0.7);
     border-color: hsl(220, 10%, 40%);
     transform: translateX(4px);
+}
+
+.onlineUsername
+{
+    color: hsl(0, 0%, 100%);
+    background-color: hsla(220, 20%, 5%, 0.5);
+    border-color: hsl(220, 10%, 15%);
 }
