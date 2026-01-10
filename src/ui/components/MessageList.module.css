@@ -71,10 +71,12 @@
 }
 
 /* Make timestamp color appropriate for each message type */
-.currentUserMessage .messageTimestamp {
+.currentUserMessage .messageTimestamp
+{
     color: hsla(0, 0%, 100%, 0.8);
 }
 
-.otherUserMessage .messageTimestamp {
+.otherUserMessage .messageTimestamp
+{
     color: hsl(180, 60%, 60%);
 }
