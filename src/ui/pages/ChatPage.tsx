@@ -9,6 +9,7 @@ import { useAuthHook } from "../../services/auth/use-auth-hook";
 import { useChatSocket } from "../../services/web-socket/useChatSocket";
 
 import styles from "./ChatPage.module.css";
+import { getMessageHistory } from "../../services/api/message.service";
 
 
 // The main chat page
@@ -38,6 +39,50 @@ export default function ChatPage()
     useEffect(() => {
         currentUserIdRef.current = currentUserId;
     }, [currentUserId]);
+
+    // Effect for laoding message history when user is selected
+    useEffect(() => {
+        if (!selectedUser || !currentUserId) return;
+
+        const loadMessageHistory = async () => {
+            try {
+                console.log(`Loading history between ${currentUserId} and ${selectedUser.id}`);
+                
+                const history = await getMessageHistory(currentUserId, selectedUser.id);
+                
+                console.log(`Loaded ${history.length} historical messages`);
+                
+                // Merge with existing messages and deduplicate
+                setAllMessages(prev => {
+                    const messageMap = new Map<string, MessageResponseDto>();
+                    
+                    // Add existing real-time messages
+                    prev.forEach(msg => {
+                        const key = msg.id || `${msg.senderId}-${msg.receiverId}-${msg.timestamp}`;
+                        messageMap.set(key, msg);
+                    });
+                    
+                    // Add historical messages
+                    history.forEach(msg => {
+                        const key = msg.id || `${msg.senderId}-${msg.receiverId}-${msg.timestamp}`;
+                        if (!messageMap.has(key)) {
+                            messageMap.set(key, msg);
+                        }
+                    });
+                    
+                    // Convert back to array and sort by timestamp
+                    return Array.from(messageMap.values())
+                        .sort((a, b) => 
+                            new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+                        );
+                });
+            } catch (error) {
+                console.error("Failed to load message history:", error);
+            }
+        };
+
+        loadMessageHistory();
+    }, [selectedUser, currentUserId]);
 
     // WebSocket subscription
     useEffect(() => {
