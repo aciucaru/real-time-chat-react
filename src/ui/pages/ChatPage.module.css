@@ -99,6 +99,8 @@
     margin: 0px;
     padding: 0px;
 
+    /* background: linear-gradient(to top, white, black 5%, black 90%, white ); */
+    /* mask-image: linear-gradient(to top, transparent, black 3%, black 90%, transparent ); */
     /* border: solid 1px hsl(200, 30%, 30%); */
 }
 
