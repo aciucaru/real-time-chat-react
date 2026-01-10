@@ -1,5 +1,5 @@
 # http-users branch
-This branch was created in order to remove the logic that gets all users via WebSockets and replace it with regular HTTP requests for getting all users.
+This branch was created in order to remove switch from getting all users via WebSockets to getting all users with regular HTTP requests.
 
 # React + TypeScript + Vite
 
