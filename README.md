@@ -1,5 +1,5 @@
-# message-history-display branch
-This branch was created in order to add functionality for displaying older messages after login, not just future messages send or received after login.
+# http-users branch
+This branch was created in order to remove the logic that gets all users via WebSockets and replace it with regular HTTP requests for getting all users.
 
 # React + TypeScript + Vite
 
